@@ -119,23 +119,26 @@ class AstAnalyser:
 
 # ------------------------------------------------
 
-def test():
+def dump_asthelper_result():
     """
     将 AstHelper 解析结果输出到 json 文件.
-    IN: test.py
-    OT: ast_helper_result.json
+    
+    IN: temp/in.py
+            suggest copied from testflight/test_app_launcher.py
+    OT: temp/out.json
+            backup this file to res/sample/ast_helper_result.json
     """
     from lk_utils.read_and_write_basic import write_json
-    helper = AstAnalyser('../../temp/in.py')
+    helper = AstAnalyser('../temp/in.py')
     res = helper.main()
-    write_json(res, '../../temp/out.json')
+    write_json(res, '../temp/out.json')
 
 
-def test2(file, schema=1):
+def dump_by_filter_schema(file, schema=1):
     """
     将 AstHelper 解析结果根据对象类型 (库, 变量, 方法和类对象) 分类后, 输出或打印出来.
 
-    IN: file: str. 要解析的 py 文件, 传入绝对路径或相对路径. e.g. './test.py'
+    IN: file: str. 要解析的 py 文件, 传入绝对路径或相对路径. e.g. './dump_asthelper_result.py'
     OT: schema 1:
             print out to the console
         schema 2:
@@ -158,7 +161,6 @@ def test2(file, schema=1):
     }
     
     for lineno, data in res.items():
-        
         for i in data:
             type_, value = i
             if type_ in dict_filter:
@@ -200,5 +202,5 @@ def test2(file, schema=1):
 
 if __name__ == '__main__':
     # 在这里传入要解析的 py 文件的路径.
-    # test2('test.py')
-    test()
+    dump_asthelper_result()
+    # dump_by_filter_schema('dump_asthelper_result.py')

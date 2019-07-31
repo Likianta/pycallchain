@@ -1,0 +1,105 @@
+"C:\Program Files\Python37\python.exe" D:/likianta/workspace/my_studio/pycallchain/src/analyser.py
+start time = 2019-07-31 11:38:27
+analyser.py:236	>>	get_project_modules()	>>	exclude_dirs = ['../dust/']
+analyser.py:249	>>	get_project_modules()	>>	len(all_pyfiles) = 7;	prj_modules = ['src.analyser', 'src.app', 'src.ast_analyser', 'temp.in', 'testflight.downloader', 'testflight.parser', 'testflight.test_app_launcher']
+analyser.py:319	>>	indexing_module_linos()	>>	---------------------------------------------------------------- indexing module linos;	testflight.test_app_launcher
+analyser.py:411	>>	indexing_module_linos()	>>	indent_module_holder = {0: 'testflight.test_app_launcher.module', 4: 'testflight.test_app_launcher.module', 8: 'testflight.test_app_launcher.Init.main'}
+analyser.py:412	>>	indexing_module_linos()	>>	[I4204] module_linos = {'testflight.test_app_launcher.module': [1, 3, 4, 38, 39], 'testflight.test_app_launcher.main': [8, 11, 12, 21, 22, 24, 25, 27, 28], 'testflight.test_app_launcher.main.child_method': [14, 15], 'testflight.test_app_launcher.main.child_method2': [17, 18, 19], 'testflight.test_app_launcher.Init': [31], 'testflight.test_app_launcher.Init.main': [33, 35]}
+analyser.py:319	>>	indexing_module_linos()	>>	---------------------------------------------------------------- indexing module linos;	testflight.test_app_launcher
+analyser.py:411	>>	indexing_module_linos()	>>	indent_module_holder = {0: 'testflight.test_app_launcher.module'}
+analyser.py:412	>>	indexing_module_linos()	>>	[I4204] module_linos = {'testflight.test_app_launcher.module': [1, 3, 4, 38], 'testflight.test_app_launcher.main': [8], 'testflight.test_app_launcher.Init': [31]}
+analyser.py:458	>>	__init__()	>>	self.top_assigns = {'module': 'testflight.test_app_launcher.module', 'main': 'testflight.test_app_launcher.main', 'Init': 'testflight.test_app_launcher.Init', 'os': 'os', 'downloader': 'testflight.downloader', 'Parser': 'testflight.parser.Parser'}
+analyser.py:459	>>	__init__()	>>	self.top_assigns_prj_only = {'module': 'testflight.test_app_launcher.module', 'main': 'testflight.test_app_launcher.main', 'Init': 'testflight.test_app_launcher.Init', 'downloader': 'testflight.downloader', 'Parser': 'testflight.parser.Parser'}
+analyser.py:115	>>	run_block()	>>	■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ run block;	testflight.test_app_launcher.module
+analyser.py:136	>>	run_block()	>>	[I4252] update module hooks;	self.module_hooks = {'module': 'testflight.test_app_launcher.module', 'main': 'testflight.test_app_launcher.main', 'Init': 'testflight.test_app_launcher.Init', 'downloader': 'testflight.downloader', 'Parser': 'testflight.parser.Parser'}
+analyser.py:144	>>	run_block()	>>	current_module = testflight.test_app_launcher.module;	linos = [1, 3, 4, 38, 39]
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Import'>", {'os': 'os'})]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Import'>;	obj_val = {'os': 'os'}
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.ImportFrom'>", {'testflight.downloader': 'downloader'})]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.ImportFrom'>;	obj_val = {'testflight.downloader': 'downloader'}
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.ImportFrom'>", {'testflight.parser.Parser': 'Parser'})]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.ImportFrom'>;	obj_val = {'testflight.parser.Parser': 'Parser'}
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.If'>", "('test', 'body', 'orelse')"), ("<class '_ast.Compare'>", "('left', 'ops', 'comparators')"), ("<class '_ast.Name'>", '__name__'), ("<class '_ast.Str'>", '__main__')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.If'>;	obj_val = ('test', 'body', 'orelse')
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Compare'>;	obj_val = ('left', 'ops', 'comparators')
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = __name__
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Str'>;	obj_val = __main__
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Expr'>", 'main'), ("<class '_ast.Call'>", 'main'), ("<class '_ast.Name'>", 'main')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Expr'>;	obj_val = main
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = main
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = main;	self.module_hooks.get(data) = testflight.test_app_launcher.main
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = main
+analyser.py:101	>>	main()	>>	[I4413] len(calls) = 1;	calls = ['testflight.test_app_launcher.main']
+analyser.py:115	>>	run_block()	>>	■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ run block;	testflight.test_app_launcher.main
+analyser.py:319	>>	indexing_module_linos()	>>	---------------------------------------------------------------- indexing module linos;	testflight.test_app_launcher.main
+analyser.py:411	>>	indexing_module_linos()	>>	indent_module_holder = {0: 'testflight.test_app_launcher.main.main', 4: 'testflight.test_app_launcher.main.main', 8: 'testflight.test_app_launcher.main.main.child_method2'}
+analyser.py:412	>>	indexing_module_linos()	>>	[I4204] module_linos = {'testflight.test_app_launcher.main.main': [8, 11, 12, 21, 22, 24, 25, 27], 'testflight.test_app_launcher.main.main.child_method': [14, 15], 'testflight.test_app_launcher.main.main.child_method2': [17, 18, 19]}
+analyser.py:136	>>	run_block()	>>	[I4252] update module hooks;	self.module_hooks = {'module': 'testflight.test_app_launcher.module', 'Init': 'testflight.test_app_launcher.Init', 'downloader': 'testflight.downloader', 'Parser': 'testflight.parser.Parser'}
+analyser.py:144	>>	run_block()	>>	current_module = testflight.test_app_launcher.main;	linos = [8, 11, 12, 21, 22, 24, 25, 27, 28]
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.FunctionDef'>", 'main')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.FunctionDef'>;	obj_val = main
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Expr'>", '\n    this is a testflight program.\n    '), ("<class '_ast.Str'>", '\n    this is a testflight program.\n    ')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Expr'>;	obj_val =
+    this is a testflight program.
+
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Str'>;	obj_val =
+    this is a testflight program.
+
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Expr'>", 'print'), ("<class '_ast.Call'>", 'print'), ("<class '_ast.Name'>", 'print'), ("<class '_ast.Call'>", 'abspath'), ("<class '_ast.Attribute'>", 'abspath'), ("<class '_ast.Name'>", '__file__'), ("<class '_ast.Attribute'>", 'path'), ("<class '_ast.Name'>", 'os')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Expr'>;	obj_val = print
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = print
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = print;	self.module_hooks.get(data) = None
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = print
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = abspath
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = abspath;	self.module_hooks.get(data) = None
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Attribute'>;	obj_val = abspath
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = __file__
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Attribute'>;	obj_val = path
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = os
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Expr'>", 'child_method'), ("<class '_ast.Call'>", 'child_method'), ("<class '_ast.Name'>", 'child_method')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Expr'>;	obj_val = child_method
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = child_method
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = child_method;	self.module_hooks.get(data) = None
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = child_method
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Expr'>", 'child_method2'), ("<class '_ast.Call'>", 'child_method2'), ("<class '_ast.Name'>", 'child_method2')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Expr'>;	obj_val = child_method2
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = child_method2
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = child_method2;	self.module_hooks.get(data) = None
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = child_method2
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Assign'>", {'init': 'Init'}), ("<class '_ast.Name'>", 'init'), ("<class '_ast.Call'>", 'Init'), ("<class '_ast.Name'>", 'Init')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Assign'>;	obj_val = {'init': 'Init'}
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = init
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = Init
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = Init;	self.module_hooks.get(data) = testflight.test_app_launcher.Init
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = Init
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Expr'>", 'main'), ("<class '_ast.Call'>", 'main'), ("<class '_ast.Attribute'>", 'main'), ("<class '_ast.Name'>", 'init')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Expr'>;	obj_val = main
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = main
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = main;	self.module_hooks.get(data) = None
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Attribute'>;	obj_val = main
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = init
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Assign'>", {'dl': 'Downloader'}), ("<class '_ast.Name'>", 'dl'), ("<class '_ast.Call'>", 'Downloader'), ("<class '_ast.Attribute'>", 'Downloader'), ("<class '_ast.Name'>", 'downloader')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Assign'>;	obj_val = {'dl': 'Downloader'}
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = dl
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = Downloader
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = Downloader;	self.module_hooks.get(data) = None
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Attribute'>;	obj_val = Downloader
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = downloader
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.Assign'>", {'ps': 'Parser'}), ("<class '_ast.Name'>", 'ps'), ("<class '_ast.Call'>", 'Parser'), ("<class '_ast.Name'>", 'Parser')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Assign'>;	obj_val = {'ps': 'Parser'}
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = ps
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Call'>;	obj_val = Parser
+analyser.py:186	>>	parse_call()	>>	[I3516] parsing call;	data = Parser;	self.module_hooks.get(data) = testflight.parser.Parser
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.Name'>;	obj_val = Parser
+analyser.py:107	>>	recurse_module_called()	>>	[D4429] len(child_calls) = 2;	child_calls = ['testflight.test_app_launcher.Init', 'testflight.parser.Parser']
+analyser.py:115	>>	run_block()	>>	■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ run block;	testflight.test_app_launcher.Init
+analyser.py:319	>>	indexing_module_linos()	>>	---------------------------------------------------------------- indexing module linos;	testflight.test_app_launcher.Init
+analyser.py:411	>>	indexing_module_linos()	>>	indent_module_holder = {}
+analyser.py:412	>>	indexing_module_linos()	>>	[I4204] module_linos = {}
+analyser.py:136	>>	run_block()	>>	[I4252] update module hooks;	self.module_hooks = {'module': 'testflight.test_app_launcher.module', 'main': 'testflight.test_app_launcher.main', 'Init': 'testflight.test_app_launcher.Init', 'downloader': 'testflight.downloader', 'Parser': 'testflight.parser.Parser'}
+analyser.py:144	>>	run_block()	>>	current_module = testflight.test_app_launcher.Init;	linos = [31]
+analyser.py:163	>>	run_line()	>>	-------- [("<class '_ast.ClassDef'>", 'Init')]
+analyser.py:168	>>	run_line()	>>	obj_type = <class '_ast.ClassDef'>;	obj_val = Init
+analyser.py:107	>>	recurse_module_called()	>>	[D4429] len(child_calls) = 0;	child_calls = []
+
+Process finished with exit code 0

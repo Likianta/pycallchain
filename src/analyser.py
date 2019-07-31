@@ -32,8 +32,8 @@ def main(prjdir, pyfile, exclude_dirs=None):
         pyfile: the launch file. e.g. '../testflight/test_app_launcher.py', make
             sure it exists.
         exclude_dirs: None/iterable. 设置要排除的目录, 目前仅被用于 src.analyser
-            .ModuleAnalyser#get_project_modules() (原本是想提升初始化效率, 实际提升不
-            大). 未来会考虑移除该参数.
+            .ModuleAnalyser#get_project_modules() (原本是想提升初始化效率, 实际提升不大
+            ). 未来会考虑移除该参数.
     OT:
     """
     assert exists(prjdir) and exists(pyfile)
@@ -74,7 +74,7 @@ class VirtualRunner:
         self.outer_calls = []
         
         self.registered_methods = {
-            "<class '_ast.Call'>"       : self.parse_call,
+            "<class '_ast.Call'>": self.parse_call,
             # "<class '_ast.ClassDef'>"   : self.parse_class_def,
             # "<class '_ast.FunctionDef'>": self.parse_function_def,
             # "<class '_ast.Import'>"     : self.parse_import,
@@ -85,18 +85,27 @@ class VirtualRunner:
     def main(self):
         """
         
-        PS: 请配合 src.utils.ast_helper.test2() 的输出结果 (ast_helper_result.json)
+        PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果 (ast_hel
+        per_result.json)
         完成本方法的制作.
+        
+        flow: (prefix = 'testflight.test_app_launcher')
+            {prefix}.module
+                {prefix}.main
+                    {prefix}.child_method
+                    {prefix}.child_method2
+                    {prefix}.Init
+                    {prefix}.Init.main
+            如需追踪观察此流, 请查看 log 中的 [I3914] 级别打印.
         """
         start = module_analyser.get_top_module() + '.' + 'module'
         calls = self.run_block(start)
-        lk.logt('[I4413]', len(calls), calls)
         self.recurse_module_called(calls)
-        
+    
     def recurse_module_called(self, calls):
         for i in calls:
             child_calls = self.run_block(i)
-            lk.logt('[D4429]', len(child_calls), child_calls)
+            # lk.logt('[I4429]', len(child_calls), child_calls)
             return self.recurse_module_called(child_calls)
     
     def run_block(self, current_module: str):
@@ -116,12 +125,12 @@ class VirtualRunner:
         # self.module_hooks 需要在每次更新 self.run_block() 时同步更新. 这是因为, 不同
         # 的 block 定义的区间范围不同, 而不同的区间范围包含的变量指配 (assigns) 也可能是不同
         # 的.
-        # 例如在 module = testflight.test_app_launcher.module 层级, self.module
-        # _hooks = {'main': 'testflight.test_app_launcher.main'}. 到了 module =
-        # testflight.test_app_launcher.Init 来运行 run_block 的时候, self.module
-        # _hooks 就变成了 {'main': 'testflight.test_app_launcher.Init.main'}. 也就
-        # 是说在不同的 block 区间, 'main' 指配的 module 对象发生了变化, 因此必须更新 self
-        # .module_hooks 才能适应最新变化.
+        # 例如在 module = testflight.test_app_launcher.module 层级, self.module_ho
+        # oks = {'main': 'testflight.test_app_launcher.main'}. 到了 module = test
+        # flight.test_app_launcher.Init 来运行 run_block 的时候, self.module_hooks
+        # 就变成了 {'main': 'testflight.test_app_launcher.Init.main'}. 也就是说在不
+        # 同的 block 区间, 'main' 指配的 module 对象发生了变化, 因此必须更新 self.module
+        # _hooks 才能适应最新变化.
         self.module_hooks = self.assign_analyser.indexing_assign_reachables(
             current_module, self.module_linos
         )
@@ -137,7 +146,7 @@ class VirtualRunner:
         
         for lino in linos:
             self.run_line(lino)
-
+        
         # | for index, lino in enumerate(linos):
         # |     # noinspection PyBroadException
         # |     try:
@@ -147,12 +156,38 @@ class VirtualRunner:
         # |             continue
         # |         else:
         # |             raise Exception
-
+        
+        lk.logt('[I3914]', self.calls)
         return self.calls
     
     def run_line(self, lino: int):
+        """
+        调试方法记录 (2019年7月31日):
+            假设应存在如下调用关系:
+                flow: (prefix = 'testflight.test_app_launcher')
+                    {prefix}.main  # <- 调用方
+                        {prefix}.child_method   # <- 调用结果
+                        {prefix}.child_method2  # <- 调用结果
+                        {prefix}.Init           # <- 调用结果
+                        {prefix}.Init.main      # <- 调用结果
+            如果本方法在调试过程中发现只能识别到 {prefix}.Init, 其他三个识别不到, 请遵循以下
+            改进步骤:
+                1. 打开 testflight/test_app_launcher.py, 以下简称 py 文件
+                2. 打开 res/sample/test_app_launcher(ast_helper_result).json, 以
+                    下简称 json 文件
+                3. 在 py 文件中找到 {prefix}.child_method 对应的行号, 例如对应行号 21,
+                    则在 json 文件中找到键为 21 的对象, 如下所示:
+                        {
+                            "21": [
+                                ["<class '_ast.Expr'>", "child_method"],
+                                ["<class '_ast.Call'>", "child_method"],
+                                ["<class '_ast.Name'>", "child_method"]
+                            ], ...
+                        }
+                4. 在控制台找到调用方所在的日志行, 分析从 I4252 到 I3914 之间的日志内容
+        """
         ast_line = ast_tree.get(lino)
-        lk.logd(ast_line, length=8)
+        lk.logd(ast_line, length=12)
         # -> [(obj_type, obj_val), ...]
         
         for i in ast_line:
@@ -196,6 +231,26 @@ class VirtualRunner:
 
 
 class ModuleAnalyser:
+    """
+    一些特殊 module 变量:
+        top_module: pyfile 所在的 module. 如 'src.app', 'src.app.downloader' 等.
+            top_module 可在 prj_modules 中找到.
+        runtime_module: pyfile 运行时首先会被执行的 module, 或者成为非定义层的 module.
+            例如:
+                1 | a = 1
+                2 | print(a)
+                3 |
+                4 | def bbb():
+                5 |      pass
+                6 |
+            其中 [1, 2, 3, 6] 是 runtime_module 的区间
+            runtime_module 的表示方法为在 top_module 后加 '.module' 如 'src.app
+            .module', 'src.app.downloader.module' 等.
+        除此之外的其他的 module 变量, 通常是指定义层的 module, 目前有 function defined 和
+            class defined 两大类. 如 'src.app.main' (由 `def main():` 产生), 'src
+            .app.Init' (由 `class Init:` 产生), 'src.app.Init.main' (由 `class
+            Init:\ndef main(self):` 产生) 等.
+    """
     
     def __init__(self, prjdir, pyfile, exclude_dirs=None):
         self.prjdir = prjdir  # -> 'D:/myprj/'
@@ -260,7 +315,12 @@ class ModuleAnalyser:
         根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
         
         ARGS:
-            top_module
+            top_module: str.
+                当为空时, 将使用默认值 self.top_module: 'src.app'
+                不为空时, 请注意传入的是当前要观察的 module 的上一级 module. 例如我们要编译
+                    src.app.main.child_method 所在的层级, 则 top_module 应传入 src.
+                    app.main. 用例参考: src.analyser.AssignAnalyser#update_assign
+                    s
             linos: list. 您可以自定义要读取的 module 范围, 本方法会仅针对这个区间进行编译.
                 例如:
                     1 | def aaa():
@@ -273,42 +333,46 @@ class ModuleAnalyser:
                 则本方法只编译 start=2 - end=5 范围内的数据, 并返回 {'src.app.aaa.bbb'
                 : [2, 5], 'src.app.aaa.bbb.ccc': [3, 4]} 作为编译结果.
                 注意: 指定的范围的开始位置的缩进必须小于等于结束位置的缩进 (空行除外).
-
+        
         IN:
             ast_tree: dict. {lino: [(obj_type, obj_val), ...], ...}
-                lino: int. 行号, 从 1 开始数
+                lino: int. 行号, 从 1 开始数.
                 obj_type: str. 对象类型, 例如 "<class 'FunctionDef'>" 等. 完整的支持
-                    列表参考 src.utils.ast_helper.AstHelper#eval_node()
+                    列表参考 src.utils.ast_helper.AstHelper#eval_node().
                 obj_val: str/dict. 对象的值, 目前仅存在 str 或 dict 类型的数据.
                     示例:
                         (str) 'print'
-                        (dict) (多用于描述 Import) {'src.downloader.Downloader':
-                            'src.downloader.Downloader'}
+                        (dict) {'src.downloader.Downloader':
+                            'src.downloader.Downloader'} (多用于描述 Import)
             lino_indent: dict. {lino: indent, ...}. 由 AstHelper#create
-                _lino_indent_dict() 提供
-                lino: int. 行号, 从 1 开始数
-                indent: int. 该行的列缩进位置, 为 4 的整数倍数, 如 0, 4, 8, 12 等
+                _lino_indent_dict() 提供.
+                lino: int. 行号, 从 1 开始数.
+                indent: int. 该行的列缩进位置, 为 4 的整数倍数, 如 0, 4, 8, 12 等.
             self.top_module: str. e.g. 'src.app'
         OT:
             module_linos: dict. {module: [lino, ...]}
                 module: str. 模块的路径名.
-                lino_list: list. 模块所涉及的行号列表, 已经过排序, 行号从 1 开始数, 最
-                    大不超过当前 pyfile 的总代码行数.
-                e.g. {'src.app.module': [1, 2, 3, 9, 10],
-                      'src.app.main': [4, 5, 8],
-                      'src.app.main.child_method': [6, 7],
-                      ...}
-                有了 module_linos 以后, 我们就可以在已知 module 的调用关系的情况下, 专注于
-                读取该 module 对应的区间范围, 逐行分析每条语句, 并进一步发现新的调用关系, 以
-                此产生裂变效应. 详见 src.analyser.VirtualRunner#main().
+                lino_list: list. 模块所涉及的行号列表, 已经过排序, 行号从 1 开始数, 最大
+                    不超过当前 pyfile 的总代码行数.
+                e.g. {
+                    'src.app.module': [1, 2, 3, 9, 10],
+                    'src.app.main': [4, 5, 8],
+                    'src.app.main.child_method': [6, 7],
+                    ...
+                }
+                有了 module_linos 以后, 我们就可以在已知 module 的调用关系的情况下, 专注
+                于读取该 module 对应的区间范围, 逐行分析每条语句, 并进一步发现新的调用关系,
+                以此产生裂变效应. 详见 src.analyser.VirtualRunner#main().
         """
-        lk.logd('indexing module linos')
-        
         if top_module == '':
             top_module = self.top_module
-        if linos is None:
-            linos = list(ast_tree.keys())
+            assert linos is None
+            linos = list(ast_indents.keys())
             linos.sort()
+        else:
+            assert linos is not None
+        
+        lk.logd('indexing module linos', top_module)
         
         # ------------------------------------------------
         
@@ -321,10 +385,13 @@ class ModuleAnalyser:
         
         # ast_defs: ast definitions
         ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
-        indent_module_dict = {}  # format: {indent: module}
-        out = {}  # format: {module: lino_list}
+        indent_module_holder = {}  # format: {indent: module}
+        module_linos = {}  # format: {module: lino_list}
         
         last_indent = 0
+        # last_indent 初始化值不影响方法的正常执行. 因为我们事先能保证 linos 参数的第一个 l
+        # ino 的 indent 一定是正常的, 而伴随着第一个 lino 的循环结尾, last_indent 就能得
+        # 到安全的更新, 因此 last_indent 的初始值无论是几都是安全的.
         
         for lino in linos:
             # lk.loga(lino)
@@ -347,15 +414,14 @@ class ModuleAnalyser:
                 assert obj_type not in ast_defs
             assert indent % 4 == 0, (lino, indent)
             
-            """
-            当 indent >= last_indent 时: 在 indent_holder 中开辟新键.
-            当 indent < last_indent 时: 从 indent_holder 更新并移除高缩进的键.
-            """
+            # lk.loga(lino, indent, obj_type, obj_val)
             
-            lk.loga(lino, indent, obj_type, obj_val)
+            # ------------------------------------------------
+            # 当 indent >= last_indent 时: 在 indent_holder 中开辟新键.
+            # 当 indent < last_indent 时: 从 indent_holder 更新并移除高缩进的键.
             
             # noinspection PyUnresolvedReferences
-            parent_module = indent_module_dict.get(
+            parent_module = indent_module_holder.get(
                 indent - 4, top_module
             )
             """
@@ -384,25 +450,35 @@ class ModuleAnalyser:
             
             # lk.loga(parent_module, current_module)
             
-            node = out.setdefault(current_module, [])
+            node = module_linos.setdefault(current_module, [])
             node.append(lino)  # NOTE: the lino is in ordered
             
-            # update indent_module_dict
-            indent_module_dict.update({indent: current_module})
+            # update indent_module_holder
+            indent_module_holder.update({indent: current_module})
             # -> {0: 'src.app.main'}, {4: 'src.app.main.child_method'}, ...
             
             # update last_indent
             last_indent = indent
         
         # sort
-        for lino_list in out.values():
+        for lino_list in module_linos.values():
             lino_list.sort()
         
-        # TEST print
-        lk.loga(indent_module_dict)
-        lk.logt('[I4204]', out)
+        lk.loga(indent_module_holder)
+        lk.logt('[I4204]', module_linos)
+        """
+        -> module_linos = {
+            'testflight.test_app_launcher.module': [1, 3, 4, 38, 39],
+            'testflight.test_app_launcher.main'  : [8, 11, 12, 21, 22, 24, 25,
+                                                    27, 28],
+            'testflight.test_app_launcher.main.child_method' : [14, 15],
+            'testflight.test_app_launcher.main.child_method2': [17, 18, 19],
+            'testflight.test_app_launcher.Init'              : [31],
+            'testflight.test_app_launcher.Init.main'         : [33, 35]
+        }
+        """
         
-        return out
+        return module_linos
     
     # ------------------------------------------------ checkers
     
@@ -442,7 +518,11 @@ class AssignAnalyser:
     def update_assigns(module, linos):
         assigns = {}
         
-        module_linos = module_analyser.indexing_module_linos(module, linos)
+        module_linos = module_analyser.indexing_module_linos(
+            get_parent_module(module), linos
+        )
+        # 注意: 这里第一个参数传入 get_parent_module(module) 而非 module. 原因详见 src.
+        # analyser.ModuleAnalyser#indexing_module_linos() 注释.
         
         for module in module_linos.keys():
             var = module.rsplit('.', 1)[1]

@@ -7,4 +7,4 @@ class Downloader:
 def test1():
     # noinspection PyUnusedLocal
     def test2():
-        print('this is test 2')
+        print('this is dump_asthelper_result 2')
