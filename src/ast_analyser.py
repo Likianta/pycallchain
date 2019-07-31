@@ -126,7 +126,8 @@ def dump_asthelper_result():
     IN: temp/in.py
             suggest copied from testflight/test_app_launcher.py
     OT: temp/out.json
-            backup this file to res/sample/ast_helper_result.json
+            backup this file to res/sample/test_app_launcher(ast_helper_result)
+            .json
     """
     from lk_utils.read_and_write_basic import write_json
     helper = AstAnalyser('../temp/in.py')

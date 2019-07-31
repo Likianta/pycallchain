@@ -32,8 +32,8 @@ def main(prjdir, pyfile, exclude_dirs=None):
         pyfile: the launch file. e.g. '../testflight/test_app_launcher.py', make
             sure it exists.
         exclude_dirs: None/iterable. 设置要排除的目录, 目前仅被用于 src.analyser
-            .ModuleAnalyser#get_project_modules() (原本是想提升初始化效率, 实际提升不大
-            ). 未来会考虑移除该参数.
+            .ModuleAnalyser#get_project_modules() (原本是想提升初始化效率, 实际提升不
+            大). 未来会考虑移除该参数.
     OT:
     """
     assert exists(prjdir) and exists(pyfile)
@@ -66,7 +66,7 @@ class VirtualRunner:
         
         self.assign_analyser = AssignAnalyser()
         
-        self.module_hooks = self.assign_analyser.top_assigns_prj_only
+        self.assign_reachables = self.assign_analyser.top_assigns_prj_only
         # -> {var: module}
         self.var_hooks = {}  # {var: feeler}
         
@@ -85,21 +85,22 @@ class VirtualRunner:
     def main(self):
         """
         
-        PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果 (ast_hel
-        per_result.json)
-        完成本方法的制作.
+        PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果
+        (ast_helper_result.json) 完成本方法的制作.
         
         flow: (prefix = 'testflight.test_app_launcher')
-            {prefix}.module
-                {prefix}.main
-                    {prefix}.child_method
-                    {prefix}.child_method2
-                    {prefix}.Init
-                    {prefix}.Init.main
+            testflight.test_app_launcher.module
+                testflight.test_app_launcher.main
+                    testflight.test_app_launcher.child_method
+                    testflight.test_app_launcher.child_method2
+                    testflight.test_app_launcher.Init
+                    testflight.test_app_launcher.Init.main
+                    testflight.downloader.Downloader
+                    testflight.parser.Parser
             如需追踪观察此流, 请查看 log 中的 [I3914] 级别打印.
         """
-        start = module_analyser.get_top_module() + '.' + 'module'
-        calls = self.run_block(start)
+        runtime_module = module_analyser.get_top_module() + '.' + 'module'
+        calls = self.run_block(runtime_module)
         self.recurse_module_called(calls)
     
     def recurse_module_called(self, calls):
@@ -122,19 +123,21 @@ class VirtualRunner:
             # return module_path
         
         # update hooks
-        # self.module_hooks 需要在每次更新 self.run_block() 时同步更新. 这是因为, 不同
-        # 的 block 定义的区间范围不同, 而不同的区间范围包含的变量指配 (assigns) 也可能是不同
-        # 的.
-        # 例如在 module = testflight.test_app_launcher.module 层级, self.module_ho
-        # oks = {'main': 'testflight.test_app_launcher.main'}. 到了 module = test
-        # flight.test_app_launcher.Init 来运行 run_block 的时候, self.module_hooks
-        # 就变成了 {'main': 'testflight.test_app_launcher.Init.main'}. 也就是说在不
-        # 同的 block 区间, 'main' 指配的 module 对象发生了变化, 因此必须更新 self.module
-        # _hooks 才能适应最新变化.
-        self.module_hooks = self.assign_analyser.indexing_assign_reachables(
+        # self.assign_reachables 需要在每次更新 self.run_block() 时同步更新. 这是因为,
+        # 不同的 block 定义的区间范围不同, 而不同的区间范围包含的变量指配 (assigns) 也可能是
+        # 不同的.
+        # 例如在 module = testflight.test_app_launcher.module 层级, self.module
+        # _hooks = {'main': 'testflight.test_app_launcher.main'}. 到了 module =
+        # testflight.test_app_launcher.Init 来运行 run_block 的时候, self.module
+        # _hooks 就变成了 {'main': 'testflight.test_app_launcher.Init.main'}. 也就
+        # 是说在不同的 block 区间, 'main' 指配的 module 对象发生了变化, 因此必须更新 self
+        # .assign_reachables 才能适应最新变化.
+        self.assign_reachables = self.assign_analyser\
+            .indexing_assign_reachables(
             current_module, self.module_linos
         )
-        lk.logt('[I4252]', 'update module hooks', self.module_hooks)
+        lk.logt('[I4252]', 'update assign_reachables', 
+                self.assign_reachables)
         
         # reset hooks
         self.var_hooks.clear()
@@ -206,16 +209,16 @@ class VirtualRunner:
         # lk.logt('[TEMPRINT]', 'nothing todo', data)
         pass
     
-    def parse_call(self, data: str):  # related to "<class '_ast.Call'>"
+    def parse_call(self, var: str):  # related to "<class '_ast.Call'>"
         """
         data:
         """
-        lk.logt('[I3516]', 'parsing call', data, self.module_hooks.get(data))
-        if data in self.module_hooks:
-            # e.g. data = 'child_method'
-            #   -> self.module_hooks[data] = 'src.app.main.child_method'
-            self.calls.append(self.module_hooks[data])
-        # else: e.g. print()
+        module = self.assign_reachables.get(var)
+        lk.logt('[I0005]', 'parsing call', var, module)
+        if module:
+            # e.g. data = 'child_method' -> self.assign_reachables[data] =
+            # 'src.app.main.child_method'
+            self.calls.append(module)
     
     @staticmethod
     def parse_class_def(data):  # related to "<class '_ast.ClassDef'>"
@@ -246,15 +249,16 @@ class ModuleAnalyser:
             其中 [1, 2, 3, 6] 是 runtime_module 的区间
             runtime_module 的表示方法为在 top_module 后加 '.module' 如 'src.app
             .module', 'src.app.downloader.module' 等.
-        除此之外的其他的 module 变量, 通常是指定义层的 module, 目前有 function defined 和
-            class defined 两大类. 如 'src.app.main' (由 `def main():` 产生), 'src
-            .app.Init' (由 `class Init:` 产生), 'src.app.Init.main' (由 `class
-            Init:\ndef main(self):` 产生) 等.
+    除此之外的其他的 module 变量, 通常是指定义层的 module, 目前有 function defined 和
+    class defined 两大类. 如 'src.app.main' (由 `def main():` 产生), 'src.app.Init'
+    (由 `class Init:` 产生), 'src.app.Init.main' (由 `class Init:\ndef main(
+    self):` 产生) 等.
     """
     
     def __init__(self, prjdir, pyfile, exclude_dirs=None):
         self.prjdir = prjdir  # -> 'D:/myprj/'
         self.top_module = self.get_module_by_filepath(pyfile)
+        self.runtime_module = self.top_module + '.module'
         self.prj_modules = self.get_project_modules(exclude_dirs)
         # -> ['testflight.test_app_launcher', 'testflight.downloader', ...]
     
@@ -300,6 +304,9 @@ class ModuleAnalyser:
     def get_top_module(self):
         return self.top_module
     
+    def get_runtime_module(self):
+        return self.runtime_module
+    
     def get_module_by_filepath(self, fpath):
         """
         IN: fpath: str. 请确保传入的是绝对路径. e.g. 'D:/myprj/src/app.py'
@@ -318,9 +325,9 @@ class ModuleAnalyser:
             top_module: str.
                 当为空时, 将使用默认值 self.top_module: 'src.app'
                 不为空时, 请注意传入的是当前要观察的 module 的上一级 module. 例如我们要编译
-                    src.app.main.child_method 所在的层级, 则 top_module 应传入 src.
-                    app.main. 用例参考: src.analyser.AssignAnalyser#update_assign
-                    s
+                    src.app.main.child_method 所在的层级, 则 top_module 应传入 src
+                    .app.main. 用例参考: src.analyser.AssignAnalyser#update
+                    _assigns
             linos: list. 您可以自定义要读取的 module 范围, 本方法会仅针对这个区间进行编译.
                 例如:
                     1 | def aaa():
@@ -389,9 +396,9 @@ class ModuleAnalyser:
         module_linos = {}  # format: {module: lino_list}
         
         last_indent = 0
-        # last_indent 初始化值不影响方法的正常执行. 因为我们事先能保证 linos 参数的第一个 l
-        # ino 的 indent 一定是正常的, 而伴随着第一个 lino 的循环结尾, last_indent 就能得
-        # 到安全的更新, 因此 last_indent 的初始值无论是几都是安全的.
+        # last_indent 初始化值不影响方法的正常执行. 因为我们事先能保证 linos 参数的第一个
+        # lino 的 indent 一定是正常的, 而伴随着第一个 lino 的循环结尾, last_indent 就能
+        # 得到安全的更新, 因此 last_indent 的初始值无论是几都是安全的.
         
         for lino in linos:
             # lk.loga(lino)
@@ -464,7 +471,7 @@ class ModuleAnalyser:
         for lino_list in module_linos.values():
             lino_list.sort()
         
-        lk.loga(indent_module_holder)
+        lk.logt('[D3421]', indent_module_holder)
         lk.logt('[I4204]', module_linos)
         """
         -> module_linos = {
@@ -494,7 +501,6 @@ class ModuleAnalyser:
 class AssignAnalyser:
     
     def __init__(self):
-        self.top_module = module_analyser.top_module
         self.prj_modules = module_analyser.prj_modules
         
         self.max_lino = max(ast_indents.keys())
@@ -505,26 +511,34 @@ class AssignAnalyser:
             if indent == 0
         ]
         
-        self.top_assigns = self.update_assigns(self.top_module, self.top_linos)
+        runtime_module = module_analyser.get_runtime_module()
+        self.top_assigns = self.update_assigns(runtime_module, self.top_linos)
         # 注意: self.top_assigns 是包含非项目模块的.
-        # -> {'os': 'os', 'downloader': 'testflight.downloader', 'Parser': 'test
-        # flight.parser.Parser', 'main': 'testflight.app.main', 'Init': 'testfli
-        # ght.app.Init'}
+        # -> {'os': 'os', 'downloader': 'testflight.downloader', 'Parser':
+        # 'testflight.parser.Parser', 'main': 'testflight.app.main', 'Init':
+        # 'testflight.app.Init'}
         self.top_assigns_prj_only = self.get_only_prj_modules(self.top_assigns)
         lk.loga(self.top_assigns)
         lk.loga(self.top_assigns_prj_only)
     
     @staticmethod
-    def update_assigns(module, linos):
+    def update_assigns(target_module, linos):
         assigns = {}
         
         module_linos = module_analyser.indexing_module_linos(
-            get_parent_module(module), linos
+            get_parent_module(target_module), linos
         )
-        # 注意: 这里第一个参数传入 get_parent_module(module) 而非 module. 原因详见 src.
-        # analyser.ModuleAnalyser#indexing_module_linos() 注释.
+        # 注意: 这里第一个参数传入 get_parent_module(module) 而非 module. 原因详见 src
+        # .analyser.ModuleAnalyser#indexing_module_linos() 注释.
         
         for module in module_linos.keys():
+            if module == target_module:
+                """
+                因为 target_module 不能指任自身, 所以应去除.
+                例如 target_module = 'src.app.module', 在源码中, 不能因此自动产生
+                module-src.app.module 的对应关系. 所以不能加入到 assigns 中.
+                """
+                continue
             var = module.rsplit('.', 1)[1]
             assigns[var] = module
         
@@ -544,9 +558,9 @@ class AssignAnalyser:
                 # lk.logt('[TEMPRINT]', obj_type, obj_val)
                 if obj_type in ast_imps:
                     for k, v in obj_val.items():
-                        module = k
+                        target_module = k
                         var = v
-                        assigns[var] = module
+                        assigns[var] = target_module
         return assigns
     
     def indexing_assign_reachables(
@@ -564,9 +578,10 @@ class AssignAnalyser:
         target_linos_start = target_linos[0]
         target_indent = ast_indents[target_linos_start]
         if target_indent == 0:
-            lino_reachables = list(range(
-                target_linos[0], target_linos[-1]
-            ))
+            lino_reachables = [
+                x for x in range(target_linos[0], target_linos[-1])
+                if x in ast_indents
+            ]
         else:
             # target_module = 'testflight.app.main.child_method'
             # -> parent_module = 'testflight.app.main'
@@ -577,9 +592,10 @@ class AssignAnalyser:
                 parent_linos_start = parent_linos[0]
                 parent_indent = ast_indents[parent_linos_start]
                 if parent_indent == 0:
-                    lino_reachables = list(range(
-                        parent_linos[0], parent_linos[-1]
-                    ))
+                    lino_reachables = [
+                        x for x in range(parent_linos[0], parent_linos[-1])
+                        if x in ast_indents
+                    ]
                     break
                 else:
                     continue
@@ -589,11 +605,11 @@ class AssignAnalyser:
         else:
             assigns = self.top_assigns.copy()
         
-        lino_reachables = [x for x in lino_reachables if x in ast_indents]
-        # 注: 为什么要这样做? 因为 ast_indents.keys() 的 linos 是不完整的, 因此要这样过滤
-        # 一下.
-        assigns.update(self.update_assigns(target_module, lino_reachables))
-        # lk.loga(assigns)
+        assigns.update(
+            self.update_assigns(
+                target_module, lino_reachables
+            )
+        )
         
         if only_prj_modules:
             return self.get_only_prj_modules(assigns)
