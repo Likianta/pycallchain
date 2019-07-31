@@ -190,12 +190,12 @@ class VirtualRunner:
                 4. 在控制台找到调用方所在的日志行, 分析从 I4252 到 I3914 之间的日志内容
         """
         ast_line = ast_tree.get(lino)
-        lk.logd(ast_line, length=12)
+        # lk.logd(ast_line, length=12)
         # -> [(obj_type, obj_val), ...]
         
         for i in ast_line:
             obj_type, obj_val = i
-            lk.loga(obj_type, obj_val)
+            # lk.loga(obj_type, obj_val)
             # obj_type: str. e.g. "<class '_ast.Call'>"
             # obj_val: str/dict. e.g. '__name__', {'os': 'os'}, ...
             
@@ -540,6 +540,7 @@ class AssignAnalyser:
                 """
                 continue
             var = module.rsplit('.', 1)[1]
+            # lk.logt('[TEMPRINT]', var, module)
             assigns[var] = module
         
         # ------------------------------------------------
@@ -558,9 +559,9 @@ class AssignAnalyser:
                 # lk.logt('[TEMPRINT]', obj_type, obj_val)
                 if obj_type in ast_imps:
                     for k, v in obj_val.items():
-                        target_module = k
+                        module = k
                         var = v
-                        assigns[var] = target_module
+                        assigns[var] = module
         return assigns
     
     def indexing_assign_reachables(
@@ -611,18 +612,24 @@ class AssignAnalyser:
             )
         )
         
+        # FIXME: dirty code
+        var = target_module.rsplit('.', 1)[1]
+        if assigns.get(var) == target_module:
+            assigns.pop(var)
+        
         if only_prj_modules:
             return self.get_only_prj_modules(assigns)
         else:
             return assigns
     
     def get_only_prj_modules(self, assigns: dict):
-        return {
-            k: v
-            for k, v in assigns.items()
-            if v in self.prj_modules
-               or get_parent_module(v) in self.prj_modules
-        }
+        new_assigns = {}
+        for var, module in assigns.items():
+            for prj_module in self.prj_modules:
+                if module.startswith(prj_module):
+                    new_assigns[var] = module
+                    break
+        return new_assigns
 
 
 # ------------------------------------------------
