@@ -61,6 +61,8 @@ def main(prjdir, pyfile, exclude_dirs=None):
 class VirtualRunner:
     
     def __init__(self):
+        self.writer = OutputWriter()
+        
         self.module_linos = module_analyser.indexing_module_linos()
         # -> {module: [lino, ...]}
         
@@ -68,13 +70,15 @@ class VirtualRunner:
         
         self.assign_reachables = self.assign_analyser.top_assigns_prj_only
         # -> {var: module}
-        self.var_hooks = {}  # {var: feeler}
+        self.assign_reached = {}  # {var: feeler}
         
-        self.calls = []
-        self.outer_calls = []
+        self.call_chain = []
+        self.outer_call_chain = []
         
         self.registered_methods = {
-            "<class '_ast.Call'>": self.parse_call,
+            "<class '_ast.Assign'>"   : self.parse_assign,
+            "<class '_ast.Attribute'>": self.parse_attribute,
+            "<class '_ast.Call'>"     : self.parse_call,
             # "<class '_ast.ClassDef'>"   : self.parse_class_def,
             # "<class '_ast.FunctionDef'>": self.parse_function_def,
             # "<class '_ast.Import'>"     : self.parse_import,
@@ -101,11 +105,15 @@ class VirtualRunner:
         """
         runtime_module = module_analyser.get_top_module() + '.' + 'module'
         calls = self.run_block(runtime_module)
+        calls = self.writer.main(runtime_module, calls)
         self.recurse_module_called(calls)
+
+        lk.logt('[TEMPRINT]', self.writer.writer)
     
     def recurse_module_called(self, calls):
         for i in calls:
             child_calls = self.run_block(i)
+            child_calls = self.writer.main(i, child_calls)
             # lk.logt('[I4429]', len(child_calls), child_calls)
             return self.recurse_module_called(child_calls)
     
@@ -116,13 +124,7 @@ class VirtualRunner:
         """
         lk.logd('run block', current_module, style='■')
         
-        if current_module not in self.module_linos:
-            # 说明此 module 是从外部导入的模块, 如 module = 'testflight.downloader'.
-            assert module_analyser.is_prj_module(current_module)
-            self.outer_calls.append(current_module)
-            # return module_path
-        
-        # update hooks
+        # update assign_reachables
         # self.assign_reachables 需要在每次更新 self.run_block() 时同步更新. 这是因为,
         # 不同的 block 定义的区间范围不同, 而不同的区间范围包含的变量指配 (assigns) 也可能是
         # 不同的.
@@ -132,16 +134,16 @@ class VirtualRunner:
         # _hooks 就变成了 {'main': 'testflight.test_app_launcher.Init.main'}. 也就
         # 是说在不同的 block 区间, 'main' 指配的 module 对象发生了变化, 因此必须更新 self
         # .assign_reachables 才能适应最新变化.
-        self.assign_reachables = self.assign_analyser\
+        self.assign_reachables = self.assign_analyser \
             .indexing_assign_reachables(
             current_module, self.module_linos
         )
-        lk.logt('[I4252]', 'update assign_reachables', 
+        lk.logt('[I4252]', 'update assign_reachables',
                 self.assign_reachables)
         
-        # reset hooks
-        self.var_hooks.clear()
-        self.calls.clear()
+        # reset assign_reached and call_chain
+        self.assign_reached.clear()
+        self.call_chain.clear()
         
         linos = self.module_linos[current_module]
         # the linos is in ordered.
@@ -160,8 +162,8 @@ class VirtualRunner:
         # |         else:
         # |             raise Exception
         
-        lk.logt('[I3914]', self.calls)
-        return self.calls
+        lk.logt('[I3914]', self.call_chain)
+        return self.call_chain
     
     def run_line(self, lino: int):
         """
@@ -209,28 +211,91 @@ class VirtualRunner:
         # lk.logt('[TEMPRINT]', 'nothing todo', data)
         pass
     
-    def parse_call(self, var: str):  # related to "<class '_ast.Call'>"
+    def parse_assign(self, assign: dict):
         """
-        data:
+        IN: assign: e.g. {"init": "Init"}
+                键是新变量, 值来自 self.assign_reachables.
+        OT: (updated) self.assign_reached
+        """
+        for new_var, known_var in assign.items():
+            module = self.assign_reachables.get(known_var)
+            if module is None:
+                # source_line = 'a = os.path(...)' -> known_var = 'os.path'
+                continue
+            else:
+                # source_line = 'a = Init()' -> known_var = 'Init'
+                self.assign_reached[new_var] = module
+    
+    def parse_attribute(self, call: str):
+        """
+        IN: call: e.g. 'downloader.Downloader'
+                call 的值是类似于 module 的写法, 可以按照点号切成多个片段, 其中第一个片段是
+                var, 可在 self.assign_reached 中发现它, 进而得到它的真实 module; 其余
+                则是该 module 级别以下的调用, 简单加在该 module 末尾即可, 即 'downloader
+                .Downloader' -> self.assign_reached: {'downloader': 'testflight
+                .downloader'} -> 'testflight.downloader' -> 'testflight
+                .downloader.Downloader' -> 更新到 self.call_chain 中.
+        OT: (updated) self.call_chain
+        """
+        var, tail = call.split('.', 1)
+        # assert var in self.assign_reached
+        module = self.assign_reached.get(var)
+        if module is None:
+            # var = 'os'
+            return
+        else:
+            # var = 'downloader.Downloader'
+            module += '.' + tail
+            self.call_chain.append(module)
+    
+    def parse_call(self, var: str):
+        """
+        IN: data: e.g. 'child_method'
+        OT: (updated) self.call_chain
         """
         module = self.assign_reachables.get(var)
         lk.logt('[I0005]', 'parsing call', var, module)
-        if module:
-            # e.g. data = 'child_method' -> self.assign_reachables[data] =
-            # 'src.app.main.child_method'
-            self.calls.append(module)
+        if module is None:
+            # e.g. var = 'abspath' -> module = None
+            return
+        else:
+            # e.g. var = 'child_method' -> module = 'src.app.main.child_method'
+            self.call_chain.append(module)
     
     @staticmethod
-    def parse_class_def(data):  # related to "<class '_ast.ClassDef'>"
+    def parse_class_def(data):
         lk.logt('[E1036]', 'a class def found in block region, this should not '
                            'be happend', data)
         raise Exception
     
     @staticmethod
-    def parse_function_def(data):  # related to "<class '_ast.FunctionDef'>"
+    def parse_function_def(data):
         lk.logt('[E1036]', 'a function def found in block region, this should '
                            'not be happend', data)
         raise Exception
+
+
+class LineParser:
+    pass
+
+
+class OutputWriter:
+    
+    def __init__(self):
+        self.top_module = module_analyser.get_top_module()
+        self.writer = {}
+    
+    def main(self, caller: str, call_chain: list):
+        self.writer.update({caller: call_chain})
+        
+        filtered_call_chain = [
+            x for x in call_chain
+            if self.is_inner_module(x)
+        ]
+        return filtered_call_chain
+    
+    def is_inner_module(self, module: str):
+        return bool(module.startswith(self.top_module))
 
 
 class ModuleAnalyser:

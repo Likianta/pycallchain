@@ -78,11 +78,11 @@
     ],
     [
       "<class '_ast.Call'>",
-      "abspath"
+      "os.path.abspath"
     ],
     [
       "<class '_ast.Attribute'>",
-      "abspath"
+      "os.path.abspath"
     ],
     [
       "<class '_ast.Name'>",
@@ -90,7 +90,7 @@
     ],
     [
       "<class '_ast.Attribute'>",
-      "path"
+      "os.path"
     ],
     [
       "<class '_ast.Name'>",
@@ -160,15 +160,15 @@
   "25": [
     [
       "<class '_ast.Expr'>",
-      "main"
+      "init.main"
     ],
     [
       "<class '_ast.Call'>",
-      "main"
+      "init.main"
     ],
     [
       "<class '_ast.Attribute'>",
-      "main"
+      "init.main"
     ],
     [
       "<class '_ast.Name'>",
@@ -179,7 +179,7 @@
     [
       "<class '_ast.Assign'>",
       {
-        "dl": "Downloader"
+        "dl": "downloader.Downloader"
       }
     ],
     [
@@ -188,11 +188,11 @@
     ],
     [
       "<class '_ast.Call'>",
-      "Downloader"
+      "downloader.Downloader"
     ],
     [
       "<class '_ast.Attribute'>",
-      "Downloader"
+      "downloader.Downloader"
     ],
     [
       "<class '_ast.Name'>",
@@ -258,7 +258,7 @@
     ],
     [
       "<class '_ast.Str'>",
-      "this is a child method of test2()"
+      "this is a child method of dump_by_filter_schema()"
     ]
   ],
   "18": [
@@ -276,7 +276,7 @@
     ],
     [
       "<class '_ast.Str'>",
-      "this is another child method of test2()"
+      "this is another child method of dump_by_filter_schema()"
     ]
   ],
   "19": [

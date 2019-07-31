@@ -33,20 +33,6 @@ class AstAnalyser:
             out[node.lineno] = len(indent)
         return out
     
-    def get_lineno_indent_dict2(self):
-        """
-        IN: self.root
-        OT: {lineno: indent}
-                lineno: int. 行号, 从 1 开始数
-                indent: int. 列缩进量
-        """
-        out = {}
-        for node in ast_walk(self.root):
-            if not hasattr(node, 'lineno'):
-                continue
-            out[node.lineno] = node.col_offset
-        return out
-    
     def main(self):
         """
         IN: self.root
@@ -70,9 +56,7 @@ class AstAnalyser:
         while result is None:
             # lk.loga(type(node))
             # ------------------------------------------------ output result
-            if isinstance(node, Attribute):
-                result = node.attr
-            elif isinstance(node, ClassDef):
+            if isinstance(node, ClassDef):
                 result = node.name
             elif isinstance(node, FunctionDef):
                 result = node.name
@@ -84,10 +68,22 @@ class AstAnalyser:
             elif isinstance(node, Assign):
                 result = {}
                 a, b = node.targets, node.value
-                v = self.eval_node(b)
+                k = self.eval_node(b)
                 for i in a:
-                    k = self.eval_node(i)
-                    result[k] = v
+                    v = self.eval_node(i)
+                    result[v] = k
+            elif isinstance(node, Attribute):
+                """
+                _fields = ('value', 'attr', 'ctx')
+                    value -> _ast.Name / _ast.Attribute
+                    attr  -> <str>
+                    ctx   -> _ast.Load
+                """
+                # print('[Attribute fields]', node.value, node.attr, node.ctx)
+                v = node.attr
+                k = self.eval_node(node.value)
+                result = k + '.' + v
+                # | result = node.attr
             elif isinstance(node, Import):
                 result = {}  # {module: import_name_or_asname}
                 for imp in node.names:
@@ -105,6 +101,13 @@ class AstAnalyser:
                         result[module + '.' + imp.name] = imp.asname
             # ------------------------------------------------ take reloop
             elif isinstance(node, Call):
+                """
+                _fields = ('func', 'args', 'keywords')
+                    func     -> _ast.Attribute / _ast.Name
+                    args     -> [] (empty list) / [_ast.Call]
+                    keywords -> [] (empty list)
+                """
+                # print('[Call fields]', node.func, node.args, node.keywords)
                 node = node.func
             elif isinstance(node, Expr):
                 node = node.value
