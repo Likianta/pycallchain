@@ -51,20 +51,22 @@ def main(prjdir, pyfile, exclude_dirs=None):
     ast_indents = ast_analyser.get_lineno_indent_dict(pyfile)
     # -> {lino: indent}
     
-    global module_analyser
     module_analyser = ModuleAnalyser(prjdir, pyfile, exclude_dirs)
     
-    runner = VirtualRunner()
+    runner = VirtualRunner(module_analyser)
     runner.main()
 
 
 class VirtualRunner:
     
-    def __init__(self):
+    def __init__(self, module_analyser):
+        self.module_analyser = module_analyser  # type: ModuleAnalyser
         self.module_linos = module_analyser.indexing_module_linos()
         # -> {module: [lino, ...]}
         
-        self.assign_analyser = AssignAnalyser()
+        self.assign_analyser = AssignAnalyser(
+            self.module_analyser.top_module, self.module_analyser.prj_modules
+        )
         
         self.module_hooks = self.assign_analyser.top_assigns_prj_only
         # -> {var: module}
@@ -88,7 +90,7 @@ class VirtualRunner:
         PS: 请配合 src.utils.ast_helper.test2() 的输出结果 (ast_helper_result.json)
         完成本方法的制作.
         """
-        start = module_analyser.get_top_module() + '.' + 'module'
+        start = self.module_analyser.get_top_module() + '.' + 'module'
         calls = self.run_block(start)
         lk.logt('[I4413]', len(calls), calls)
         self.recurse_module_called(calls)
@@ -108,7 +110,7 @@ class VirtualRunner:
         
         if current_module not in self.module_linos:
             # 说明此 module 是从外部导入的模块, 如 module = 'testflight.downloader'.
-            assert module_analyser.is_prj_module(current_module)
+            assert self.module_analyser.is_prj_module(current_module)
             self.outer_calls.append(current_module)
             # return module_path
         
@@ -417,9 +419,9 @@ class ModuleAnalyser:
 
 class AssignAnalyser:
     
-    def __init__(self):
-        self.top_module = module_analyser.top_module
-        self.prj_modules = module_analyser.prj_modules
+    def __init__(self, top_module, prj_modules):
+        self.top_module = top_module
+        self.prj_modules = prj_modules
         
         self.max_lino = max(ast_indents.keys())
         
@@ -429,7 +431,7 @@ class AssignAnalyser:
             if indent == 0
         ]
         
-        self.top_assigns = self.update_assigns(self.top_module, self.top_linos)
+        self.top_assigns = self.update_assigns(self.top_linos)
         # 注意: self.top_assigns 是包含非项目模块的.
         # -> {'os': 'os', 'downloader': 'testflight.downloader', 'Parser': 'test
         # flight.parser.Parser', 'main': 'testflight.app.main', 'Init': 'testfli
@@ -438,20 +440,11 @@ class AssignAnalyser:
         lk.loga(self.top_assigns)
         lk.loga(self.top_assigns_prj_only)
     
-    @staticmethod
-    def update_assigns(module, linos):
+    def update_assigns(self, linos):
         assigns = {}
         
-        module_linos = module_analyser.indexing_module_linos(module, linos)
-        
-        for module in module_linos.keys():
-            var = module.rsplit('.', 1)[1]
-            assigns[var] = module
-        
-        # ------------------------------------------------
-        
         # ABBR: defs: definitions. imps: imports.
-        # ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
+        ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
         ast_imps = ("<class '_ast.Import'>", "<class '_ast.ImportFrom'>")
         
         for lino in linos:
@@ -462,11 +455,16 @@ class AssignAnalyser:
             for element in ast_line:
                 obj_type, obj_val = element
                 # lk.logt('[TEMPRINT]', obj_type, obj_val)
-                if obj_type in ast_imps:
+                if obj_type in ast_defs:
+                    module = self.top_module + '.' + obj_val  # FIXME
+                    # -> 'src.app.main'
+                    value = obj_val  # -> 'main'
+                    assigns[value] = module
+                elif obj_type in ast_imps:
                     for k, v in obj_val.items():
                         module = k
-                        var = v
-                        assigns[var] = module
+                        value = v
+                        assigns[value] = module
         return assigns
     
     def indexing_assign_reachables(
@@ -512,7 +510,7 @@ class AssignAnalyser:
         lino_reachables = [x for x in lino_reachables if x in ast_indents]
         # 注: 为什么要这样做? 因为 ast_indents.keys() 的 linos 是不完整的, 因此要这样过滤
         # 一下.
-        assigns.update(self.update_assigns(target_module, lino_reachables))
+        assigns.update(self.update_assigns(lino_reachables))
         # lk.loga(assigns)
         
         if only_prj_modules:
@@ -542,8 +540,4 @@ def get_parent_module(module: str):
 # ------------------------------------------------
 
 if __name__ == '__main__':
-    main(
-        prjdir='../',
-        pyfile='../testflight/test_app_launcher.py',
-        exclude_dirs=['../dust/']
-    )
+    main('../', '../testflight/app.py', ['../dust/', '../temp/', '../tests/'])
