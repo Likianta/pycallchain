@@ -89,10 +89,10 @@ class VirtualRunner:
     def main(self):
         """
         
-        PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果
-        (ast_helper_result.json) 完成本方法的制作.
+        PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果 (或 res
+        /sample/test_app_launcher(ast_helper_result).json) 完成本方法的制作.
         
-        flow: (prefix = 'testflight.test_app_launcher')
+        flow:
             testflight.test_app_launcher.module
                 testflight.test_app_launcher.main
                     testflight.test_app_launcher.child_method
@@ -115,7 +115,7 @@ class VirtualRunner:
             child_calls = self.run_block(i)
             child_calls = self.writer.main(i, child_calls)
             # lk.logt('[I4429]', len(child_calls), child_calls)
-            return self.recurse_module_called(child_calls)
+            self.recurse_module_called(child_calls)
     
     def run_block(self, current_module: str):
         """
@@ -217,8 +217,16 @@ class VirtualRunner:
                 键是新变量, 值来自 self.assign_reachables.
         OT: (updated) self.assign_reached
         """
+        lk.logt('[D0505]', assign)
+        
         for new_var, known_var in assign.items():
-            module = self.assign_reachables.get(known_var)
+            module = self.assign_reachables.get(known_var.split('.', 1)[0])
+            """
+            case 1:
+                known_var = "downloader.Downloader"
+                -> known_var.split('.', 1)[0] = "downloader"
+                -> module = 'testflight.downloader'
+            """
             if module is None:
                 # source_line = 'a = os.path(...)' -> known_var = 'os.path'
                 continue
@@ -237,15 +245,22 @@ class VirtualRunner:
                 .downloader.Downloader' -> 更新到 self.call_chain 中.
         OT: (updated) self.call_chain
         """
-        var, tail = call.split('.', 1)
+        if '.' in call:
+            head, tail = call.split('.', 1)
+        else:
+            head, tail = call, ''
         # assert var in self.assign_reached
-        module = self.assign_reached.get(var)
+        module = self.assign_reached.get(head)
+        
+        lk.logt('[D0521]', call, module)
+        
         if module is None:
             # var = 'os'
             return
         else:
             # var = 'downloader.Downloader'
-            module += '.' + tail
+            if tail:
+                module += '.' + tail
             self.call_chain.append(module)
     
     def parse_call(self, var: str):
@@ -253,12 +268,20 @@ class VirtualRunner:
         IN: data: e.g. 'child_method'
         OT: (updated) self.call_chain
         """
-        module = self.assign_reachables.get(var)
-        lk.logt('[I0005]', 'parsing call', var, module)
+        if '.' in var:
+            head, tail = var.split('.', 1)
+        else:
+            head, tail = var, ''
+        module = self.assign_reachables.get(head)
+        
+        lk.logt('[D0005]', var, module)
+        
         if module is None:
             # e.g. var = 'abspath' -> module = None
             return
         else:
+            if tail:
+                module += '.' + tail
             # e.g. var = 'child_method' -> module = 'src.app.main.child_method'
             self.call_chain.append(module)
     
@@ -382,12 +405,12 @@ class ModuleAnalyser:
     
     # ------------------------------------------------ indexing
     
-    def indexing_module_linos(self, top_module='', linos=None):
+    def indexing_module_linos(self, master_module='', linos=None):
         """
         根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
         
         ARGS:
-            top_module: str.
+            master_module: str.
                 当为空时, 将使用默认值 self.top_module: 'src.app'
                 不为空时, 请注意传入的是当前要观察的 module 的上一级 module. 例如我们要编译
                     src.app.main.child_method 所在的层级, 则 top_module 应传入 src
@@ -436,15 +459,15 @@ class ModuleAnalyser:
                 于读取该 module 对应的区间范围, 逐行分析每条语句, 并进一步发现新的调用关系,
                 以此产生裂变效应. 详见 src.analyser.VirtualRunner#main().
         """
-        if top_module == '':
-            top_module = self.top_module
+        if master_module == '':
+            master_module = self.top_module
             assert linos is None
             linos = list(ast_indents.keys())
             linos.sort()
         else:
             assert linos is not None
         
-        lk.logd('indexing module linos', top_module)
+        lk.logd('indexing module linos', master_module, linos)
         
         # ------------------------------------------------
         
@@ -494,7 +517,7 @@ class ModuleAnalyser:
             
             # noinspection PyUnresolvedReferences
             parent_module = indent_module_holder.get(
-                indent - 4, top_module
+                indent - 4, master_module
             )
             """
             case 1:
@@ -648,6 +671,7 @@ class AssignAnalyser:
                 x for x in range(target_linos[0], target_linos[-1])
                 if x in ast_indents
             ]
+            master_module = target_module
         else:
             # target_module = 'testflight.app.main.child_method'
             # -> parent_module = 'testflight.app.main'
@@ -665,6 +689,8 @@ class AssignAnalyser:
                     break
                 else:
                     continue
+                    
+            master_module = parent_module
         
         if only_prj_modules:
             assigns = self.top_assigns_prj_only.copy()
@@ -673,7 +699,7 @@ class AssignAnalyser:
         
         assigns.update(
             self.update_assigns(
-                target_module, lino_reachables
+                master_module, lino_reachables
             )
         )
         
