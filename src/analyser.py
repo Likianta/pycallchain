@@ -309,7 +309,7 @@ class OutputWriter:
         self.writer = {}
     
     def main(self, caller: str, call_chain: list):
-        self.writer.update({caller: call_chain})
+        self.writer.update({caller: call_chain.copy()})
         
         filtered_call_chain = [
             x for x in call_chain
@@ -668,7 +668,11 @@ class AssignAnalyser:
         target_linos_start = target_linos[0]
         target_indent = ast_indents[target_linos_start]
         if target_indent == 0:
-            lino_reachables = target_linos
+            lino_reachables = [
+                lino
+                for lino in range(target_linos[0], target_linos[-1])
+                if lino in ast_indents
+            ]
             master_module = target_module
         else:
             # target_module = 'testflight.app.main.child_method'
@@ -680,7 +684,11 @@ class AssignAnalyser:
                 parent_linos_start = parent_linos[0]
                 parent_indent = ast_indents[parent_linos_start]
                 if parent_indent == 0:
-                    lino_reachables = parent_linos
+                    lino_reachables = [
+                        lino
+                        for lino in range(parent_linos[0], parent_linos[-1])
+                        if lino in ast_indents
+                    ]
                     break
                 else:
                     continue
