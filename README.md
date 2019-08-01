@@ -65,4 +65,17 @@ method = adict.get(rnd)()  # <- 这里的函数调用事件无法被识别到.
 
 ```
 
+**case 4: 可变长度参数 (`*args`, `**kwargs`)**
 
+```python
+def aaa(*data):
+    print(data[0]())  # <- data[0] 无法被关联到 bbb 函数.
+
+
+def bbb():
+    pass
+
+
+aaa(bbb)
+
+```

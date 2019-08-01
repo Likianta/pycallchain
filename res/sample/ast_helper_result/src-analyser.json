@@ -1,0 +1,3983 @@
+{
+  "12": [
+    [
+      "<class '_ast.Expr'>",
+      "\nabbr note:\n    ast: abstract syntax tree\n    dir: directory\n    lino: line number\n    linos: line numbers\n    obj: object\n    prj: project\n    pyfile: python file (path) or any file postfixed with '.py'\n    val: value\n    var: variant\n"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\nabbr note:\n    ast: abstract syntax tree\n    dir: directory\n    lino: line number\n    linos: line numbers\n    obj: object\n    prj: project\n    pyfile: python file (path) or any file postfixed with '.py'\n    val: value\n    var: variant\n"
+    ]
+  ],
+  "13": [
+    [
+      "<class '_ast.ImportFrom'>",
+      {
+        "os.path.abspath": "abspath",
+        "os.path.exists": "exists"
+      }
+    ]
+  ],
+  "15": [
+    [
+      "<class '_ast.ImportFrom'>",
+      {
+        "lk_utils.file_sniffer": "file_sniffer"
+      }
+    ]
+  ],
+  "16": [
+    [
+      "<class '_ast.ImportFrom'>",
+      {
+        "lk_utils.lk_logger.lk": "lk"
+      }
+    ]
+  ],
+  "18": [
+    [
+      "<class '_ast.ImportFrom'>",
+      {
+        "src.ast_analyser.AstAnalyser": "AstAnalyser"
+      }
+    ]
+  ],
+  "19": [
+    [
+      "<class '_ast.ImportFrom'>",
+      {
+        "src.module_analyser.ModuleAnalyser": "ModuleAnalyser"
+      }
+    ]
+  ],
+  "20": [
+    [
+      "<class '_ast.ImportFrom'>",
+      {
+        "src.writer.Writer": "Writer"
+      }
+    ]
+  ],
+  "23": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "main"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "prjdir"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "pyfile"
+    ]
+  ],
+  "40": [
+    [
+      "<class '_ast.Expr'>",
+      "\n    假设测试项目为 testflight, 启动文件为 testflight/test_app_launcher.py.\n    项目结构为:\n        testflight\n        |-downloader.py\n        |-parser.py\n        |-test_app_launcher.py  # <- here is the launch file.\n    本模块所有代码设计均可参照测试项目源码来理解.\n    \n    IN: prjdir: project directory. e.g. '../testflight/', make sure it exists.\n        pyfile: the launch file. e.g. '../testflight/test_app_launcher.py', make\n            sure it exists.\n        exclude_dirs: None/iterable. 设置要排除的目录, 目前仅被用于 src.analyser\n            .ModuleAnalyser#get_project_modules() (原本是想提升初始化效率, 实际提升不\n            大). 未来会考虑移除该参数.\n    OT:\n    "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n    假设测试项目为 testflight, 启动文件为 testflight/test_app_launcher.py.\n    项目结构为:\n        testflight\n        |-downloader.py\n        |-parser.py\n        |-test_app_launcher.py  # <- here is the launch file.\n    本模块所有代码设计均可参照测试项目源码来理解.\n    \n    IN: prjdir: project directory. e.g. '../testflight/', make sure it exists.\n        pyfile: the launch file. e.g. '../testflight/test_app_launcher.py', make\n            sure it exists.\n        exclude_dirs: None/iterable. 设置要排除的目录, 目前仅被用于 src.analyser\n            .ModuleAnalyser#get_project_modules() (原本是想提升初始化效率, 实际提升不\n            大). 未来会考虑移除该参数.\n    OT:\n    "
+    ]
+  ],
+  "41": [
+    [
+      "<class '_ast.Assert'>",
+      "('test', 'msg')"
+    ],
+    [
+      "<class '_ast.BoolOp'>",
+      "('op', 'values')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "exists"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "exists"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "exists"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "prjdir"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "exists"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "pyfile"
+    ]
+  ],
+  "43": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "prjdir": "file_sniffer.prettify_dir"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "prjdir"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "file_sniffer.prettify_dir"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "file_sniffer.prettify_dir"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "abspath"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "file_sniffer"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "abspath"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "prjdir"
+    ]
+  ],
+  "45": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "pyfile": "file_sniffer.prettify_file"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "pyfile"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "file_sniffer.prettify_file"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "file_sniffer.prettify_file"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "abspath"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "file_sniffer"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "abspath"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "pyfile"
+    ]
+  ],
+  "49": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "ast_analyser": "AstAnalyser"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_analyser"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "AstAnalyser"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "AstAnalyser"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "pyfile"
+    ]
+  ],
+  "50": [
+    [
+      "<class '_ast.Global'>",
+      "('names',)"
+    ]
+  ],
+  "51": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "ast_tree": "ast_analyser.main"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_tree"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "ast_analyser.main"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "ast_analyser.main"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_analyser"
+    ]
+  ],
+  "53": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "ast_indents": "ast_analyser.get_lino_indent_dict"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_indents"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "ast_analyser.get_lino_indent_dict"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "ast_analyser.get_lino_indent_dict"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_analyser"
+    ]
+  ],
+  "56": [
+    [
+      "<class '_ast.Global'>",
+      "('names',)"
+    ]
+  ],
+  "57": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "module_analyser": "ModuleAnalyser"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_analyser"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "ModuleAnalyser"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ModuleAnalyser"
+    ]
+  ],
+  "58": [
+    [
+      "<class '_ast.Name'>",
+      "prjdir"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "pyfile"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_tree"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_indents"
+    ]
+  ],
+  "61": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "runner": "VirtualRunner"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "runner"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "VirtualRunner"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "VirtualRunner"
+    ]
+  ],
+  "62": [
+    [
+      "<class '_ast.Expr'>",
+      "runner.main"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "runner.main"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "runner.main"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "runner"
+    ]
+  ],
+  "65": [
+    [
+      "<class '_ast.ClassDef'>",
+      "VirtualRunner"
+    ]
+  ],
+  "67": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "__init__"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ]
+  ],
+  "68": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.writer": "Writer"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.writer"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "Writer"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "Writer"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module_analyser.get_top_module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module_analyser.get_top_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_analyser"
+    ]
+  ],
+  "70": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.module_linos": "module_analyser.indexing_module_linos"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.module_linos"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module_analyser.indexing_module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module_analyser.indexing_module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_analyser"
+    ]
+  ],
+  "73": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.assign_analyser": "AssignAnalyser"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_analyser"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "AssignAnalyser"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "AssignAnalyser"
+    ]
+  ],
+  "75": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.assign_reachables": "self.assign_analyser.top_assigns_prj_only"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reachables"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_analyser.top_assigns_prj_only"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_analyser"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "77": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.assign_reached": "('keys', 'values')"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reached"
+    ],
+    [
+      "<class '_ast.Dict'>",
+      "('keys', 'values')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "79": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.call_chain": "('elts', 'ctx')"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain"
+    ],
+    [
+      "<class '_ast.List'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "80": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.outer_call_chain": "('elts', 'ctx')"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.outer_call_chain"
+    ],
+    [
+      "<class '_ast.List'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "82": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.registered_methods": "('keys', 'values')"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.registered_methods"
+    ],
+    [
+      "<class '_ast.Dict'>",
+      "('keys', 'values')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "83": [
+    [
+      "<class '_ast.Str'>",
+      "<class '_ast.Assign'>"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.parse_assign"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "84": [
+    [
+      "<class '_ast.Str'>",
+      "<class '_ast.Attribute'>"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.parse_attribute"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "85": [
+    [
+      "<class '_ast.Str'>",
+      "<class '_ast.Call'>"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.parse_call"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "93": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "main"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ]
+  ],
+  "109": [
+    [
+      "<class '_ast.Expr'>",
+      "\n        \n        PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果 (或 res\n        /sample/test_app_launcher(ast_helper_result).json) 完成本方法的制作.\n        \n        flow:\n            testflight.test_app_launcher.module\n                testflight.test_app_launcher.main\n                    testflight.test_app_launcher.child_method\n                    testflight.test_app_launcher.child_method2\n                    testflight.test_app_launcher.Init\n                    testflight.test_app_launcher.Init.main\n                    testflight.downloader.Downloader\n                    testflight.parser.Parser\n            如需追踪观察此流, 请查看 log 中的 [I3914] 级别打印.\n        "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n        \n        PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果 (或 res\n        /sample/test_app_launcher(ast_helper_result).json) 完成本方法的制作.\n        \n        flow:\n            testflight.test_app_launcher.module\n                testflight.test_app_launcher.main\n                    testflight.test_app_launcher.child_method\n                    testflight.test_app_launcher.child_method2\n                    testflight.test_app_launcher.Init\n                    testflight.test_app_launcher.Init.main\n                    testflight.downloader.Downloader\n                    testflight.parser.Parser\n            如需追踪观察此流, 请查看 log 中的 [I3914] 级别打印.\n        "
+    ]
+  ],
+  "110": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "runtime_module": "module_analyser.get_runtime_module"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "runtime_module"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module_analyser.get_runtime_module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module_analyser.get_runtime_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_analyser"
+    ]
+  ],
+  "111": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "calls": "self.run_block"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "calls"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.run_block"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.run_block"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "runtime_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "112": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "calls": "self.writer.record"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "calls"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.writer.record"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.writer.record"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "runtime_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "calls"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.writer"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "113": [
+    [
+      "<class '_ast.Expr'>",
+      "self.recurse_module_called"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.recurse_module_called"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.recurse_module_called"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "calls"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "115": [
+    [
+      "<class '_ast.Expr'>",
+      "self.writer.show"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.writer.show"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.writer.show"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.writer"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "117": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "recurse_module_called"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "calls"
+    ]
+  ],
+  "118": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "i"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "calls"
+    ]
+  ],
+  "119": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "child_calls": "self.run_block"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "child_calls"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.run_block"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.run_block"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "i"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "120": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "child_calls": "self.writer.record"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "child_calls"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.writer.record"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.writer.record"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "i"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "child_calls"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.writer"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "122": [
+    [
+      "<class '_ast.Expr'>",
+      "self.recurse_module_called"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.recurse_module_called"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.recurse_module_called"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "child_calls"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "124": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "run_block"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "current_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "str"
+    ]
+  ],
+  "128": [
+    [
+      "<class '_ast.Expr'>",
+      "\n        IN: module: str\n        OT: self.calls: list\n        "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n        IN: module: str\n        OT: self.calls: list\n        "
+    ]
+  ],
+  "129": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.logd"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.logd"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.logd"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "run block"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "current_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "■"
+    ]
+  ],
+  "141": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.assign_reachables": "self.assign_analyser.indexing_assign_reachables"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reachables"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.assign_analyser.indexing_assign_reachables"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_analyser.indexing_assign_reachables"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_analyser"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "143": [
+    [
+      "<class '_ast.Name'>",
+      "current_module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "145": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "[I4252]"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "update assign_reachables"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ]
+  ],
+  "146": [
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reachables"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "149": [
+    [
+      "<class '_ast.Expr'>",
+      "self.assign_reached.clear"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.assign_reached.clear"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reached.clear"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reached"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "150": [
+    [
+      "<class '_ast.Expr'>",
+      "self.call_chain.clear"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.call_chain.clear"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain.clear"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "152": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "linos": "self.module_linos"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "linos"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "self.module_linos"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "current_module"
+    ]
+  ],
+  "154": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "current_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ]
+  ],
+  "156": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "linos"
+    ]
+  ],
+  "157": [
+    [
+      "<class '_ast.Expr'>",
+      "self.run_line"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.run_line"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.run_line"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "169": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "[I3914]"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "170": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "172": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "run_line"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "int"
+    ]
+  ],
+  "197": [
+    [
+      "<class '_ast.Expr'>",
+      "\n        调试方法记录 (2019年7月31日):\n            假设应存在如下调用关系:\n                flow: (prefix = 'testflight.test_app_launcher')\n                    {prefix}.main  # <- 调用方\n                        {prefix}.child_method   # <- 调用结果\n                        {prefix}.child_method2  # <- 调用结果\n                        {prefix}.Init           # <- 调用结果\n                        {prefix}.Init.main      # <- 调用结果\n            如果本方法在调试过程中发现只能识别到 {prefix}.Init, 其他三个识别不到, 请遵循以下\n            改进步骤:\n                1. 打开 testflight/test_app_launcher.py, 以下简称 py 文件\n                2. 打开 res/sample/test_app_launcher(ast_helper_result).json, 以\n                    下简称 json 文件\n                3. 在 py 文件中找到 {prefix}.child_method 对应的行号, 例如对应行号 21,\n                    则在 json 文件中找到键为 21 的对象, 如下所示:\n                        {\n                            \"21\": [\n                                [\"<class '_ast.Expr'>\", \"child_method\"],\n                                [\"<class '_ast.Call'>\", \"child_method\"],\n                                [\"<class '_ast.Name'>\", \"child_method\"]\n                            ], ...\n                        }\n                4. 在控制台找到调用方所在的日志行, 分析从 I4252 到 I3914 之间的日志内容\n        "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n        调试方法记录 (2019年7月31日):\n            假设应存在如下调用关系:\n                flow: (prefix = 'testflight.test_app_launcher')\n                    {prefix}.main  # <- 调用方\n                        {prefix}.child_method   # <- 调用结果\n                        {prefix}.child_method2  # <- 调用结果\n                        {prefix}.Init           # <- 调用结果\n                        {prefix}.Init.main      # <- 调用结果\n            如果本方法在调试过程中发现只能识别到 {prefix}.Init, 其他三个识别不到, 请遵循以下\n            改进步骤:\n                1. 打开 testflight/test_app_launcher.py, 以下简称 py 文件\n                2. 打开 res/sample/test_app_launcher(ast_helper_result).json, 以\n                    下简称 json 文件\n                3. 在 py 文件中找到 {prefix}.child_method 对应的行号, 例如对应行号 21,\n                    则在 json 文件中找到键为 21 的对象, 如下所示:\n                        {\n                            \"21\": [\n                                [\"<class '_ast.Expr'>\", \"child_method\"],\n                                [\"<class '_ast.Call'>\", \"child_method\"],\n                                [\"<class '_ast.Name'>\", \"child_method\"]\n                            ], ...\n                        }\n                4. 在控制台找到调用方所在的日志行, 分析从 I4252 到 I3914 之间的日志内容\n        "
+    ]
+  ],
+  "198": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "ast_line": "ast_tree.get"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_line"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "ast_tree.get"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "ast_tree.get"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_tree"
+    ]
+  ],
+  "202": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "i"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_line"
+    ]
+  ],
+  "203": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "('elts', 'ctx')": "i"
+      }
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "i"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "obj_type"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "obj_val"
+    ]
+  ],
+  "208": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "method": "self.registered_methods.get"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "method"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.registered_methods.get"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.registered_methods.get"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "obj_type"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.do_nothing"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.registered_methods"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "209": [
+    [
+      "<class '_ast.Expr'>",
+      "method"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "method"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "method"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "obj_val"
+    ]
+  ],
+  "213": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "do_nothing"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "staticmethod"
+    ]
+  ],
+  "214": [
+    [
+      "<class '_ast.arg'>",
+      "data"
+    ]
+  ],
+  "216": [
+    [
+      "<class '_ast.Pass'>",
+      "()"
+    ]
+  ],
+  "218": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "parse_assign"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "assign"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "dict"
+    ]
+  ],
+  "223": [
+    [
+      "<class '_ast.Expr'>",
+      "\n        IN: assign: e.g. {\"init\": \"Init\"}\n                键是新变量, 值来自 self.assign_reachables.\n        OT: (updated) self.assign_reached\n        "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n        IN: assign: e.g. {\"init\": \"Init\"}\n                键是新变量, 值来自 self.assign_reachables.\n        OT: (updated) self.assign_reached\n        "
+    ]
+  ],
+  "224": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "[D0505]"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assign"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ]
+  ],
+  "226": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "assign.items"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "new_var"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "known_var"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "assign.items"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assign"
+    ]
+  ],
+  "227": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "module": "self.assign_reachables.get"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.assign_reachables.get"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reachables.get"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "known_var.split"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reachables"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "known_var.split"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "known_var.split"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "known_var"
+    ]
+  ],
+  "233": [
+    [
+      "<class '_ast.Expr'>",
+      "\n            case 1:\n                known_var = \"downloader.Downloader\"\n                -> known_var.split('.', 1)[0] = \"downloader\"\n                -> module = 'testflight.downloader'\n            "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n            case 1:\n                known_var = \"downloader.Downloader\"\n                -> known_var.split('.', 1)[0] = \"downloader\"\n                -> module = 'testflight.downloader'\n            "
+    ]
+  ],
+  "234": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.NameConstant'>",
+      "('value',)"
+    ]
+  ],
+  "236": [
+    [
+      "<class '_ast.Continue'>",
+      "()"
+    ]
+  ],
+  "239": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.assign_reached": "module"
+      }
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "self.assign_reached"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reached"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "new_var"
+    ]
+  ],
+  "241": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "parse_attribute"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "call"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "str"
+    ]
+  ],
+  "251": [
+    [
+      "<class '_ast.Expr'>",
+      "\n        IN: call: e.g. 'downloader.Downloader'\n                call 的值是类似于 module 的写法, 可以按照点号切成多个片段, 其中第一个片段是\n                var, 可在 self.assign_reached 中发现它, 进而得到它的真实 module; 其余\n                则是该 module 级别以下的调用, 简单加在该 module 末尾即可, 即 'downloader\n                .Downloader' -> self.assign_reached: {'downloader': 'testflight\n                .downloader'} -> 'testflight.downloader' -> 'testflight\n                .downloader.Downloader' -> 更新到 self.call_chain 中.\n        OT: (updated) self.call_chain\n        "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n        IN: call: e.g. 'downloader.Downloader'\n                call 的值是类似于 module 的写法, 可以按照点号切成多个片段, 其中第一个片段是\n                var, 可在 self.assign_reached 中发现它, 进而得到它的真实 module; 其余\n                则是该 module 级别以下的调用, 简单加在该 module 末尾即可, 即 'downloader\n                .Downloader' -> self.assign_reached: {'downloader': 'testflight\n                .downloader'} -> 'testflight.downloader' -> 'testflight\n                .downloader.Downloader' -> 更新到 self.call_chain 中.\n        OT: (updated) self.call_chain\n        "
+    ]
+  ],
+  "252": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Name'>",
+      "call"
+    ]
+  ],
+  "253": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "('elts', 'ctx')": "call.split"
+      }
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "call.split"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "head"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "tail"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "call.split"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "call"
+    ]
+  ],
+  "255": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "('elts', 'ctx')": "('elts', 'ctx')"
+      }
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "head"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "tail"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "call"
+    ],
+    [
+      "<class '_ast.Str'>",
+      ""
+    ]
+  ],
+  "257": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "module": "self.assign_reached.get"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.assign_reached.get"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reached.get"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "head"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reached"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "259": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "[D0521]"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "call"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ]
+  ],
+  "261": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.NameConstant'>",
+      "('value',)"
+    ]
+  ],
+  "263": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ]
+  ],
+  "266": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "tail"
+    ]
+  ],
+  "267": [
+    [
+      "<class '_ast.AugAssign'>",
+      "('target', 'op', 'value')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.BinOp'>",
+      "('left', 'op', 'right')"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Name'>",
+      "tail"
+    ]
+  ],
+  "268": [
+    [
+      "<class '_ast.Expr'>",
+      "self.call_chain.append"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.call_chain.append"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain.append"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "270": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "parse_call"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "str"
+    ]
+  ],
+  "274": [
+    [
+      "<class '_ast.Expr'>",
+      "\n        IN: data: e.g. 'child_method'\n        OT: (updated) self.call_chain\n        "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n        IN: data: e.g. 'child_method'\n        OT: (updated) self.call_chain\n        "
+    ]
+  ],
+  "275": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ]
+  ],
+  "276": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "('elts', 'ctx')": "var.split"
+      }
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "var.split"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "head"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "tail"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "var.split"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ]
+  ],
+  "278": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "('elts', 'ctx')": "('elts', 'ctx')"
+      }
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "head"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "tail"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Str'>",
+      ""
+    ]
+  ],
+  "279": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "module": "self.assign_reachables.get"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.assign_reachables.get"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reachables.get"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "head"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.assign_reachables"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "281": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "[D0005]"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ]
+  ],
+  "283": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.NameConstant'>",
+      "('value',)"
+    ]
+  ],
+  "285": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ]
+  ],
+  "287": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "tail"
+    ]
+  ],
+  "288": [
+    [
+      "<class '_ast.AugAssign'>",
+      "('target', 'op', 'value')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.BinOp'>",
+      "('left', 'op', 'right')"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Name'>",
+      "tail"
+    ]
+  ],
+  "290": [
+    [
+      "<class '_ast.Expr'>",
+      "self.call_chain.append"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.call_chain.append"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain.append"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.call_chain"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "292": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "parse_class_def"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "staticmethod"
+    ]
+  ],
+  "293": [
+    [
+      "<class '_ast.arg'>",
+      "data"
+    ]
+  ],
+  "294": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "[E1036]"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "a class def found in block region, this should not be happend"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ]
+  ],
+  "295": [
+    [
+      "<class '_ast.Name'>",
+      "data"
+    ]
+  ],
+  "296": [
+    [
+      "<class '_ast.Raise'>",
+      "('exc', 'cause')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "Exception"
+    ]
+  ],
+  "298": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "parse_function_def"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "staticmethod"
+    ]
+  ],
+  "299": [
+    [
+      "<class '_ast.arg'>",
+      "data"
+    ]
+  ],
+  "300": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.logt"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "[E1036]"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "a function def found in block region, this should not be happend"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ]
+  ],
+  "301": [
+    [
+      "<class '_ast.Name'>",
+      "data"
+    ]
+  ],
+  "302": [
+    [
+      "<class '_ast.Raise'>",
+      "('exc', 'cause')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "Exception"
+    ]
+  ],
+  "305": [
+    [
+      "<class '_ast.ClassDef'>",
+      "AssignAnalyser"
+    ]
+  ],
+  "307": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "__init__"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ]
+  ],
+  "308": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.prj_modules": "module_analyser.prj_modules"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.prj_modules"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module_analyser.prj_modules"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_analyser"
+    ]
+  ],
+  "310": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.max_lino": "max"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.max_lino"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "max"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "max"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "ast_indents.keys"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "ast_indents.keys"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_indents"
+    ]
+  ],
+  "311": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.max_lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "313": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.top_linos": "('elt', 'generators')"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "314": [
+    [
+      "<class '_ast.ListComp'>",
+      "('elt', 'generators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ]
+  ],
+  "315": [
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "ast_indents.items"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "indent"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "ast_indents.items"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_indents"
+    ]
+  ],
+  "316": [
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "indent"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ]
+  ],
+  "319": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "runtime_module": "module_analyser.get_runtime_module"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "runtime_module"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module_analyser.get_runtime_module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module_analyser.get_runtime_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_analyser"
+    ]
+  ],
+  "320": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.top_assigns": "self.update_assigns"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.update_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.update_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "runtime_module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "325": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "self.top_assigns_prj_only": "self.get_only_prj_modules"
+      }
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns_prj_only"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.get_only_prj_modules"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.get_only_prj_modules"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "326": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "327": [
+    [
+      "<class '_ast.Expr'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "lk.loga"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns_prj_only"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lk"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "329": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "update_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "staticmethod"
+    ]
+  ],
+  "330": [
+    [
+      "<class '_ast.arg'>",
+      "target_module"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "linos"
+    ]
+  ],
+  "331": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "assigns": "('keys', 'values')"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Dict'>",
+      "('keys', 'values')"
+    ]
+  ],
+  "333": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "module_linos": "module_analyser.indexing_module_linos"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_linos"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module_analyser.indexing_module_linos"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module_analyser.indexing_module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_analyser"
+    ]
+  ],
+  "334": [
+    [
+      "<class '_ast.Call'>",
+      "get_parent_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "get_parent_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_module"
+    ]
+  ],
+  "339": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module_linos.keys"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module_linos.keys"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_linos"
+    ]
+  ],
+  "340": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_module"
+    ]
+  ],
+  "345": [
+    [
+      "<class '_ast.Expr'>",
+      "\n                因为 target_module 不能指任自身, 所以应去除.\n                例如 target_module = 'src.app.module', 在源码中, 不能因此自动产生\n                module-src.app.module 的对应关系. 所以不能加入到 assigns 中.\n                "
+    ],
+    [
+      "<class '_ast.Str'>",
+      "\n                因为 target_module 不能指任自身, 所以应去除.\n                例如 target_module = 'src.app.module', 在源码中, 不能因此自动产生\n                module-src.app.module 的对应关系. 所以不能加入到 assigns 中.\n                "
+    ]
+  ],
+  "346": [
+    [
+      "<class '_ast.Continue'>",
+      "()"
+    ]
+  ],
+  "347": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "var": "module.rsplit"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "module.rsplit"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module.rsplit"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module.rsplit"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ]
+  ],
+  "349": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "assigns": "module"
+      }
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ]
+  ],
+  "355": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "ast_imps": "('elts', 'ctx')"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_imps"
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "<class '_ast.Import'>"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "<class '_ast.ImportFrom'>"
+    ]
+  ],
+  "357": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "linos"
+    ]
+  ],
+  "358": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "ast_line": "ast_tree.get"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_line"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "ast_tree.get"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "ast_tree.get"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_tree"
+    ]
+  ],
+  "362": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "element"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_line"
+    ]
+  ],
+  "363": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "('elts', 'ctx')": "element"
+      }
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "element"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "obj_type"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "obj_val"
+    ]
+  ],
+  "365": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "obj_type"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_imps"
+    ]
+  ],
+  "366": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "obj_val.items"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "k"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "v"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "obj_val.items"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "obj_val"
+    ]
+  ],
+  "367": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "module": "k"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "k"
+    ]
+  ],
+  "368": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "var": "v"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "v"
+    ]
+  ],
+  "369": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "assigns": "module"
+      }
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ]
+  ],
+  "370": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ]
+  ],
+  "372": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "indexing_assign_reachables"
+    ]
+  ],
+  "373": [
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "target_module"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "module_linos"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "only_prj_modules"
+    ],
+    [
+      "<class '_ast.NameConstant'>",
+      "('value',)"
+    ]
+  ],
+  "375": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "is_top_module": "bool"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "is_top_module"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "bool"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "bool"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "target_module.endswith"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "target_module.endswith"
+    ],
+    [
+      "<class '_ast.Str'>",
+      ".module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_module"
+    ]
+  ],
+  "377": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "is_top_module"
+    ]
+  ],
+  "378": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ],
+    [
+      "<class '_ast.IfExp'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "only_prj_modules"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns_prj_only"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "379": [
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "381": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "lino_reachables": "('value',)"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino_reachables"
+    ],
+    [
+      "<class '_ast.NameConstant'>",
+      "('value',)"
+    ]
+  ],
+  "383": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "target_linos": "module_linos"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_linos"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_module"
+    ]
+  ],
+  "385": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "target_linos_start": "target_linos"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_linos_start"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "target_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_linos"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ]
+  ],
+  "386": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "target_indent": "ast_indents"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_indent"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "ast_indents"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_indents"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_linos_start"
+    ]
+  ],
+  "387": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_indent"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ]
+  ],
+  "388": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "lino_reachables": "('elt', 'generators')"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino_reachables"
+    ]
+  ],
+  "389": [
+    [
+      "<class '_ast.ListComp'>",
+      "('elt', 'generators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ]
+  ],
+  "390": [
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "range"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "range"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "target_linos"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "target_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_linos"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.UnaryOp'>",
+      "('op', 'operand')"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ]
+  ],
+  "391": [
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_indents"
+    ]
+  ],
+  "393": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "master_module": "target_module"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "master_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_module"
+    ]
+  ],
+  "398": [
+    [
+      "<class '_ast.While'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.NameConstant'>",
+      "('value',)"
+    ]
+  ],
+  "399": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "parent_module": "get_parent_module"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_module"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "get_parent_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "get_parent_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_module"
+    ]
+  ],
+  "400": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "parent_linos": "module_linos"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_linos"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_module"
+    ]
+  ],
+  "401": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "parent_linos_start": "parent_linos"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_linos_start"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "parent_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_linos"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ]
+  ],
+  "402": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "parent_indent": "ast_indents"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_indent"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "ast_indents"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_indents"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_linos_start"
+    ]
+  ],
+  "403": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_indent"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ]
+  ],
+  "404": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "lino_reachables": "('elt', 'generators')"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino_reachables"
+    ]
+  ],
+  "405": [
+    [
+      "<class '_ast.ListComp'>",
+      "('elt', 'generators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ]
+  ],
+  "406": [
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "range"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "range"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "parent_linos"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "parent_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_linos"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_linos"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.UnaryOp'>",
+      "('op', 'operand')"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ]
+  ],
+  "407": [
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "ast_indents"
+    ]
+  ],
+  "409": [
+    [
+      "<class '_ast.Break'>",
+      "()"
+    ]
+  ],
+  "411": [
+    [
+      "<class '_ast.Continue'>",
+      "()"
+    ]
+  ],
+  "413": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "master_module": "parent_module"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "master_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "parent_module"
+    ]
+  ],
+  "415": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "only_prj_modules"
+    ]
+  ],
+  "416": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "assigns": "self.top_assigns_prj_only.copy"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.top_assigns_prj_only.copy"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns_prj_only.copy"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns_prj_only"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "418": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "assigns": "self.top_assigns.copy"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.top_assigns.copy"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns.copy"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.top_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "420": [
+    [
+      "<class '_ast.Expr'>",
+      "assigns.update"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "assigns.update"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "assigns.update"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ]
+  ],
+  "421": [
+    [
+      "<class '_ast.Call'>",
+      "self.update_assigns"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.update_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "422": [
+    [
+      "<class '_ast.Name'>",
+      "master_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "lino_reachables"
+    ]
+  ],
+  "427": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "var": "target_module.rsplit"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "target_module.rsplit"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "target_module.rsplit"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "target_module.rsplit"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_module"
+    ]
+  ],
+  "428": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "assigns.get"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "target_module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "assigns.get"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ]
+  ],
+  "429": [
+    [
+      "<class '_ast.Expr'>",
+      "assigns.pop"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "assigns.pop"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "assigns.pop"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ]
+  ],
+  "431": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "only_prj_modules"
+    ]
+  ],
+  "432": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "self.get_only_prj_modules"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.get_only_prj_modules"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "434": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ]
+  ],
+  "436": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "get_only_prj_modules"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "self"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "dict"
+    ]
+  ],
+  "437": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "new_assigns": "('keys', 'values')"
+      }
+    ],
+    [
+      "<class '_ast.Name'>",
+      "new_assigns"
+    ],
+    [
+      "<class '_ast.Dict'>",
+      "('keys', 'values')"
+    ]
+  ],
+  "438": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Tuple'>",
+      "('elts', 'ctx')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "assigns.items"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "assigns.items"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "assigns"
+    ]
+  ],
+  "439": [
+    [
+      "<class '_ast.For'>",
+      "('target', 'iter', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "prj_module"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "self.prj_modules"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "self"
+    ]
+  ],
+  "440": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module.startswith"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module.startswith"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "prj_module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ]
+  ],
+  "441": [
+    [
+      "<class '_ast.Assign'>",
+      {
+        "new_assigns": "module"
+      }
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "new_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "new_assigns"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "var"
+    ]
+  ],
+  "442": [
+    [
+      "<class '_ast.Break'>",
+      "()"
+    ]
+  ],
+  "443": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "new_assigns"
+    ]
+  ],
+  "448": [
+    [
+      "<class '_ast.FunctionDef'>",
+      "get_parent_module"
+    ],
+    [
+      "<class '_ast.arg'>",
+      "module"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "str"
+    ]
+  ],
+  "449": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ]
+  ],
+  "451": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ],
+    [
+      "<class '_ast.Str'>",
+      ""
+    ]
+  ],
+  "452": [
+    [
+      "<class '_ast.Return'>",
+      "('value',)"
+    ],
+    [
+      "<class '_ast.Subscript'>",
+      "module.rsplit"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "module.rsplit"
+    ],
+    [
+      "<class '_ast.Attribute'>",
+      "module.rsplit"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "."
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Num'>",
+      "('n',)"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "module"
+    ]
+  ],
+  "458": [
+    [
+      "<class '_ast.If'>",
+      "('test', 'body', 'orelse')"
+    ],
+    [
+      "<class '_ast.Compare'>",
+      "('left', 'ops', 'comparators')"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "__name__"
+    ],
+    [
+      "<class '_ast.Str'>",
+      "__main__"
+    ]
+  ],
+  "459": [
+    [
+      "<class '_ast.Expr'>",
+      "main"
+    ],
+    [
+      "<class '_ast.Call'>",
+      "main"
+    ],
+    [
+      "<class '_ast.Name'>",
+      "main"
+    ]
+  ],
+  "460": [
+    [
+      "<class '_ast.Str'>",
+      "../"
+    ]
+  ],
+  "461": [
+    [
+      "<class '_ast.Str'>",
+      "../testflight/app.py"
+    ]
+  ]
+}

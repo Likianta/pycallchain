@@ -121,7 +121,7 @@ class ModuleHelper:
         if unknown_module in self.prj_modules:
             return True, unknown_module
         for i in self.prj_modules:
-            if unknown_module.startswith(i):
+            if unknown_module.startswith(i + '.'):
                 return True, i
         else:
             return False, ''

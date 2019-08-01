@@ -80,7 +80,30 @@ class AstAnalyser:
         while result is None:
             # lk.loga(type(node))
             # ------------------------------------------------ output result
-            if isinstance(node, ClassDef):
+            if isinstance(node, arg):
+                """
+                _fields = ('arg', 'annotation')
+                    arg        -> str
+                    annotation -> None / _ast.Name
+
+                e.g. 1:
+                    source_code = `def main(x, y):`
+                    -> node.arg = 'x', node.annotation = None
+                       node.arg = 'y', node.annotation = None
+
+                e.g. 2:
+                    source_code = `def main(self, x: dict):`
+                    -> node.arg = 'self', node.annotation = None
+                       node.arg = 'x', node.annotation = eval(node.annotation)
+                       = 'dict'
+                """
+                # print('[arg fields]', node.arg, node.annotation)
+                result = node.arg
+                # | k, v = node.arg, node.annotation
+                # | if v is not None:
+                # |     v = self.eval_node(v)
+                # | result = {k: v}
+            elif isinstance(node, ClassDef):
                 result = node.name
             elif isinstance(node, FunctionDef):
                 result = node.name
@@ -100,7 +123,7 @@ class AstAnalyser:
                 """
                 _fields = ('value', 'attr', 'ctx')
                     value -> _ast.Name / _ast.Attribute
-                    attr  -> <str>
+                    attr  -> str
                     ctx   -> _ast.Load
                 """
                 # print('[Attribute fields]', node.value, node.attr, node.ctx)
@@ -153,8 +176,7 @@ def dump_asthelper_result():
     IN: temp/in.py
             suggest copied from testflight/test_app_launcher.py
     OT: temp/out.json
-            backup this file to res/sample/test_app_launcher(ast_helper_result)
-            .json
+            backup this file to res/sample/ast_helper_result/{module}.json
     """
     from lk_utils.read_and_write_basic import write_json
     helper = AstAnalyser('../temp/in.py')
@@ -178,7 +200,8 @@ def dump_by_filter_schema(file, schema=1):
     """
     将 AstHelper 解析结果根据对象类型 (库, 变量, 方法和类对象) 分类后, 输出或打印出来.
 
-    IN: file: str. 要解析的 py 文件, 传入绝对路径或相对路径. e.g. './dump_asthelper_result.py'
+    IN: file: str. 要解析的 py 文件, 传入绝对路径或相对路径. e.g. './dump_asthelper
+            _result.py'
     OT: schema 1:
             print out to the console
         schema 2:
@@ -241,9 +264,9 @@ def dump_by_filter_schema(file, schema=1):
 
 
 if __name__ == '__main__':
-    # dump_asthelper_result()
+    dump_asthelper_result()
     
-    dump_lino_indent_result()
+    # dump_lino_indent_result()
     
     # 在这里传入要解析的 py 文件的路径.
     # dump_by_filter_schema('dump_asthelper_result.py')

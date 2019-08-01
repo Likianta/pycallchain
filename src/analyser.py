@@ -221,10 +221,12 @@ class VirtualRunner:
                 键是新变量, 值来自 self.assign_reachables.
         OT: (updated) self.assign_reached
         """
-        lk.logt('[D0505]', assign)
-        
         for new_var, known_var in assign.items():
+            if known_var.startswith('self.'):
+                known_var = known_var.replace('self.', '', 1)
+                # 'self.run_line' -> 'row_line'
             module = self.assign_reachables.get(known_var.split('.', 1)[0])
+            lk.logt('[D0505]', assign, module)
             """
             case 1:
                 known_var = "downloader.Downloader"
@@ -237,6 +239,7 @@ class VirtualRunner:
             else:
                 # source_line = 'a = Init()' -> known_var = 'Init'
                 self.assign_reached[new_var] = module
+                self.call_chain.append(module)
     
     def parse_attribute(self, call: str):
         """
@@ -331,7 +334,7 @@ class AssignAnalyser:
         assigns = {}
         
         module_linos = module_analyser.indexing_module_linos(
-            get_parent_module(target_module), linos
+            module_analyser.get_parent_module(target_module), linos
         )
         # 注意: 这里第一个参数传入 get_parent_module(module) 而非 module. 原因详见 src
         # .analyser.ModuleAnalyser#indexing_module_linos() 注释.
@@ -372,45 +375,43 @@ class AssignAnalyser:
     def indexing_assign_reachables(
             self, target_module, module_linos, only_prj_modules=True
     ):
-        is_top_module = bool(target_module.endswith('.module'))
-        # OR: is_top_module = bool(target_module == self.top_module)
-        if is_top_module:
+        if target_module == module_analyser.get_runtime_module():
             return self.top_assigns_prj_only if only_prj_modules \
                 else self.top_assigns
         
-        lino_reachables = None
+        # ------------------------------------------------
         
         target_linos = module_linos[target_module]
-        # the target_linos is already in ordered.
-        target_linos_start = target_linos[0]
-        target_indent = ast_indents[target_linos_start]
-        if target_indent == 0:
-            lino_reachables = [
-                lino
-                for lino in range(target_linos[0], target_linos[-1])
-                if lino in ast_indents
-            ]
-            master_module = target_module
+        start_offset, end_offset = target_linos[0], target_linos[-1] + 1
+        indent = ast_indents[start_offset]
+        if indent == 0:
+            module = target_module
         else:
-            # target_module = 'testflight.app.main.child_method'
-            # -> parent_module = 'testflight.app.main'
-            
             while True:
-                parent_module = get_parent_module(target_module)
+                parent_module = module_analyser.get_parent_module(target_module)
                 parent_linos = module_linos[parent_module]
-                parent_linos_start = parent_linos[0]
-                parent_indent = ast_indents[parent_linos_start]
+                start_offset, end_offset = parent_linos[0], parent_linos[-1] + 1
+                parent_indent = ast_indents[start_offset]
                 if parent_indent == 0:
-                    lino_reachables = [
-                        lino
-                        for lino in range(parent_linos[0], parent_linos[-1])
-                        if lino in ast_indents
-                    ]
                     break
                 else:
                     continue
-            
-            master_module = parent_module
+            module = parent_module
+
+        while end_offset < self.max_lino:
+            if end_offset in ast_indents:
+                indent = ast_indents[end_offset]
+                if indent == 0:
+                    break
+            end_offset += 1
+
+        lino_reachables = [
+            lino
+            for lino in range(start_offset, end_offset)
+            if lino in ast_indents
+        ]
+        
+        # ------------------------------------------------
         
         if only_prj_modules:
             assigns = self.top_assigns_prj_only.copy()
@@ -419,7 +420,7 @@ class AssignAnalyser:
         
         assigns.update(
             self.update_assigns(
-                master_module, lino_reachables
+                module, lino_reachables
             )
         )
         
@@ -441,16 +442,6 @@ class AssignAnalyser:
                     new_assigns[var] = module
                     break
         return new_assigns
-
-
-# ------------------------------------------------
-
-def get_parent_module(module: str):
-    if '.' not in module:
-        # raise Exception
-        return ''
-    return module.rsplit('.', 1)[0]
-    # 'testflight.app.main.child_method' -> 'testflight.app.main'
 
 
 # ------------------------------------------------
