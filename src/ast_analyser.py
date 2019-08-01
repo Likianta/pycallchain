@@ -3,42 +3,61 @@ from ast import parse as ast_parse, walk as ast_walk
 
 
 class AstAnalyser:
+    file = ''
     root = None
     
     def __init__(self, file):
+        self.file = file
+        
         with open(file, mode='r', encoding='utf-8-sig') as f:
             text = f.read()
         self.root = ast_parse(text)
     
-    def get_lineno_indent_dict(self, file):
+    def get_lino_indent_dict(self):
         """
-        IN: self.root
-        OT: {lineno: indent}
-                lineno: int. 行号, 从 1 开始数
-                indent: int. 列缩进量, 是 4 的整数倍, 如 0, 4, 8, ...
-                    注意有一个特殊值 -1
+        IN: self.file
+            self.root
+        OT: {lino: indent}
+                lino: int. count from 1 but not consecutive. the linos are
+                    already sorted by ascending order.
+                indent: int. the column offset, assert all of them would be
+                    integral multiple of 4, e.g. 0, 4, 8, 12, ... and no
+                    exception.
         """
         import re
         from lk_utils.read_and_write_basic import read_file_by_line
         
         reg = re.compile(r'^ *')
-        code_lines = read_file_by_line(file)
+        code_lines = read_file_by_line(self.file)
         
-        out = {}
+        lino_indent = {}
+        
         for node in ast_walk(self.root):
             if not hasattr(node, 'lineno'):
                 continue
             line = code_lines[node.lineno - 1]
             indent = reg.findall(line)[0]
-            out[node.lineno] = len(indent)
-        return out
+            lino_indent[node.lineno] = len(indent)
+        
+        # sort linos
+        sorted_lino_indent = {
+            k: lino_indent[k]
+            for k in sorted(lino_indent.keys())
+        }
+        
+        return sorted_lino_indent
     
     def main(self):
         """
         IN: self.root
         OT: dict. {
-                lineno: [(node_type, node_value), (...), ...], ...
+                lino: [(node_type, node_value), (...), ...], ...
             }
+                lino: int. count from 1 but not consecutive. the linos are
+                    already sorted by ascending order.
+                node_type: str. refer to _ast class types, e.g. "<class '_ast
+                    .Import'>", "<class '_ast.FunctionDef'>", ...
+                node_value: str/dict. e.g. 'os.path.abspath', {'os': 'os'}, ...
         """
         out = {}
         
@@ -48,7 +67,13 @@ class AstAnalyser:
             x = out.setdefault(node.lineno, [])
             x.append((str(type(node)), self.eval_node(node)))
         
-        return out
+        # sort linos
+        sorted_out = {
+            k: out[k]
+            for k in sorted(out.keys())
+        }
+        
+        return sorted_out
     
     def eval_node(self, node):
         result = None
@@ -164,7 +189,7 @@ def dump_by_filter_schema(file, schema=1):
         "<class '_ast.ClassDef'>"   : cls_dict,
     }
     
-    for lineno, data in res.items():
+    for lino, data in res.items():
         for i in data:
             type_, value = i
             if type_ in dict_filter:
@@ -172,16 +197,16 @@ def dump_by_filter_schema(file, schema=1):
                 if isinstance(value, str):
                     # schema 1: use list to store vars
                     node = d.setdefault(value, [])
-                    node.append(lineno)
+                    node.append(lino)
                     # schema 2: override if the old key-value exists
-                    # d[value] = lineno
+                    # d[value] = lino
                 else:
                     for k in value.keys():
                         # schema 1: use list to store vars
                         node = d.setdefault(k, [])
-                        node.append(lineno)
+                        node.append(lino)
                         # schema 2: override if the old key-value exists
-                        # d[k] = lineno
+                        # d[k] = lino
     
     if schema == 1:
         # schema 1: print out to the console

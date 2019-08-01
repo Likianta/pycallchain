@@ -48,7 +48,7 @@ def main(prjdir, pyfile, exclude_dirs=None):
     global ast_tree, ast_indents
     ast_tree = ast_analyser.main()
     # -> {lino: [(obj_type, obj_val), ...]}
-    ast_indents = ast_analyser.get_lineno_indent_dict(pyfile)
+    ast_indents = ast_analyser.get_lino_indent_dict()
     # -> {lino: indent}
     
     global module_analyser
@@ -462,8 +462,7 @@ class ModuleAnalyser:
         if master_module == '':
             master_module = self.top_module
             assert linos is None
-            linos = list(ast_indents.keys())
-            linos.sort()
+            linos = list(ast_indents.keys())  # the linos are already sorted.
         else:
             assert linos is not None
         
@@ -592,6 +591,7 @@ class AssignAnalyser:
         self.prj_modules = module_analyser.prj_modules
         
         self.max_lino = max(ast_indents.keys())
+        lk.loga(self.max_lino)
         
         self.top_linos = [
             lino
@@ -664,13 +664,11 @@ class AssignAnalyser:
         lino_reachables = None
         
         target_linos = module_linos[target_module]
+        # the target_linos is already in ordered.
         target_linos_start = target_linos[0]
         target_indent = ast_indents[target_linos_start]
         if target_indent == 0:
-            lino_reachables = [
-                x for x in range(target_linos[0], target_linos[-1])
-                if x in ast_indents
-            ]
+            lino_reachables = target_linos
             master_module = target_module
         else:
             # target_module = 'testflight.app.main.child_method'
@@ -682,10 +680,7 @@ class AssignAnalyser:
                 parent_linos_start = parent_linos[0]
                 parent_indent = ast_indents[parent_linos_start]
                 if parent_indent == 0:
-                    lino_reachables = [
-                        x for x in range(parent_linos[0], parent_linos[-1])
-                        if x in ast_indents
-                    ]
+                    lino_reachables = parent_linos
                     break
                 else:
                     continue
