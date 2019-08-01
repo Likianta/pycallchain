@@ -107,7 +107,7 @@ class VirtualRunner:
                     testflight.parser.Parser
             如需追踪观察此流, 请查看 log 中的 [I3914] 级别打印.
         """
-        runtime_module = module_analyser.get_top_module() + '.' + 'module'
+        runtime_module = module_analyser.get_runtime_module()
         calls = self.run_block(runtime_module)
         calls = self.writer.record(runtime_module, calls)
         self.recurse_module_called(calls)
