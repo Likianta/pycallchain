@@ -2,13 +2,11 @@ from lk_utils.lk_logger import lk
 
 
 class Writer:
-    writer = None
     
     def __init__(self, top_module):
         self.top_module = top_module  # -> 'testflight.app'
         
         self.stacks = []
-        self.unsafe = []
         
         self.tile_view = {}  # 平铺视图
         self.cascade_view = {}  # 层叠视图
@@ -25,52 +23,24 @@ class Writer:
     def show(self):
         """
         IN: self.tile_view: dict. {module: [call1, call2, ...]}
-                e.g. {
-                    'testflight.app.module': [
-                        'testflight.app.main'
-                    ],
-                    'testflight.app.main': [
-                        'testflight.app.main.child_method',
-                        'testflight.app.main.child_method2',
-                        'testflight.app.Init',
-                        'testflight.app.Init.main',
-                        'testflight.downloader.Downloader',
-                        'testflight.parser.Parser'
-                    ],
-                    'testflight.app.main.child_method': [
-                    ],
-                    'testflight.app.main.child_method2': [
-                        'testflight.app.main.child_method'
-                    ],
-                    'testflight.app.Init': [
-                    ],
-                    'testflight.app.Init.main': [
-                    ]
-                }
+                e.g. res/sample/pycallchain_tile_view.json
         OT: self.cascade_view: dict. {runtime_module: {module1: {module11: {...
                 }, module12: {...}, ...}}}
-                e.g. {
-                    'testflight.app.module': {
-                        'testflight.app.main': {
-                            'testflight.app.main.child_method': {},
-                            'testflight.app.main.child_method2': {
-                                'testflight.app.main.child_method': {},
-                            },
-                            'testflight.app.Init': {},
-                            'testflight.app.Init.main': {},
-                            'testflight.downloader.Downloader': {},
-                            'testflight.parser.Parser': {},
-                        }
-                    }
-                }
+                e.g. res/sample/pycallchain_cascade_view.json
         """
         runtime_module = self.top_module + '.module'
         
         node = self.cascade_view.setdefault(runtime_module, {})
         calls = self.tile_view.get(runtime_module)
         self.recurse(node, calls)
-
+        
+        lk.logt('[D3619]', self.stacks)
         lk.logt('[I3316]', self.cascade_view)
+        
+        # TEST output
+        from lk_utils.read_and_write_basic import write_json
+        write_json(self.cascade_view, '../temp/out.json')
+        write_json(self.tile_view, '../temp/out2.json')
     
     def recurse(self, node: dict, calls):
         """
@@ -86,6 +56,8 @@ class Writer:
             }
             calls = ['src.prechecker.main', 'src.app.main']
         """
+        if not calls:
+            return
         for module in calls:
             if module in self.stacks:
                 """

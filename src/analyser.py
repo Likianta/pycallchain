@@ -112,8 +112,8 @@ class VirtualRunner:
         calls = self.writer.record(runtime_module, calls)
         self.recurse_module_called(calls)
         
-        lk.logt('[TEMPRINT]', self.writer.writer)
-    
+        self.writer.show()
+        
     def recurse_module_called(self, calls):
         for i in calls:
             child_calls = self.run_block(i)
