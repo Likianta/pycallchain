@@ -456,7 +456,13 @@ def get_parent_module(module: str):
 # ------------------------------------------------
 
 if __name__ == '__main__':
+    # main(
+    #     prjdir='../',
+    #     pyfile='../testflight/app.py'
+    # )
+
+    # TEST
     main(
         prjdir='../',
-        pyfile='../testflight/app.py'
+        pyfile='../temp/in.py'
     )

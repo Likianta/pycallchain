@@ -15,6 +15,8 @@ class AstAnalyser:
     
     def get_lino_indent_dict(self):
         """
+        refer: {lkdemo}/ast_demo.py
+        
         IN: self.file
             self.root
         OT: {lino: indent}
@@ -24,20 +26,17 @@ class AstAnalyser:
                     integral multiple of 4, e.g. 0, 4, 8, 12, ... and no
                     exception.
         """
-        import re
-        from lk_utils.read_and_write_basic import read_file_by_line
-        
-        reg = re.compile(r'^ *')
-        code_lines = read_file_by_line(self.file)
-        
         lino_indent = {}
         
         for node in ast_walk(self.root):
-            if not hasattr(node, 'lineno'):
+            if not (hasattr(node, 'lineno') and hasattr(node, 'col_offset')):
                 continue
-            line = code_lines[node.lineno - 1]
-            indent = reg.findall(line)[0]
-            lino_indent[node.lineno] = len(indent)
+            if node.lineno in lino_indent:
+                continue
+            if node.col_offset == -1:
+                # 说明这个节点是 docstring
+                continue
+            lino_indent[node.lineno] = node.col_offset
         
         # sort linos
         sorted_lino_indent = {
@@ -163,6 +162,18 @@ def dump_asthelper_result():
     write_json(res, '../temp/out.json')
 
 
+def dump_lino_indent_result():
+    """
+    将 AstHelper#get_lino_indent_dict() 的结果输出到 json 文件.
+    IN: temp/in.py
+    OT: temp/out.json
+    """
+    from lk_utils.read_and_write_basic import write_json
+    helper = AstAnalyser('../temp/in.py')
+    res = helper.get_lino_indent_dict()
+    write_json(res, '../temp/out.json')
+
+
 def dump_by_filter_schema(file, schema=1):
     """
     将 AstHelper 解析结果根据对象类型 (库, 变量, 方法和类对象) 分类后, 输出或打印出来.
@@ -230,6 +241,9 @@ def dump_by_filter_schema(file, schema=1):
 
 
 if __name__ == '__main__':
+    # dump_asthelper_result()
+    
+    dump_lino_indent_result()
+    
     # 在这里传入要解析的 py 文件的路径.
-    dump_asthelper_result()
     # dump_by_filter_schema('dump_asthelper_result.py')

@@ -256,7 +256,7 @@ class ModuleAnalyser(ModuleHelper):
             if indent == -1:
                 indent = last_indent
                 assert obj_type not in ast_defs
-            assert indent % 4 == 0, (lino, indent)
+            # assert indent % 4 == 0, (lino, indent)  # TODO
             
             # lk.loga(lino, indent, obj_type, obj_val)
             
