@@ -64,6 +64,9 @@ def main(prjdir, pyfile):
 
 
 class VirtualRunner:
+    """
+    虚拟运行机将分析 pyfile 并生成对象之间的调用关系.
+    """
     
     def __init__(self):
         self.writer = Writer(module_analyser.get_top_module())
