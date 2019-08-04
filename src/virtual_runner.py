@@ -1,66 +1,7 @@
-"""
-abbr note:
-    ast: abstract syntax tree
-    dir: directory
-    lino: line number
-    linos: line numbers
-    obj: object
-    prj: project
-    pyfile: python file (path) or any file postfixed with '.py'
-    val: value
-    var: variant
-"""
-from os.path import abspath, exists
-
-from lk_utils import file_sniffer
 from lk_utils.lk_logger import lk
 
 from src.assign_analyser import AssignAnalyser
-from src.ast_analyser import AstAnalyser
-from src.module_analyser import ModuleAnalyser
 from src.writer import Writer
-
-
-def main(prjdir, pyfile):
-    """
-    假设测试项目为 testflight, 启动文件为 testflight/test_app_launcher.py.
-    项目结构为:
-        testflight
-        |-downloader.py
-        |-parser.py
-        |-test_app_launcher.py  # <- here is the launch file.
-    本模块所有代码设计均可参照测试项目源码来理解.
-    
-    IN: prjdir: project directory. e.g. '../testflight/', make sure it exists.
-        pyfile: the launch file. e.g. '../testflight/test_app_launcher.py', make
-            sure it exists.
-        exclude_dirs: None/iterable. 设置要排除的目录, 目前仅被用于 src.analyser
-            .ModuleAnalyser#get_project_modules() (原本是想提升初始化效率, 实际提升不
-            大). 未来会考虑移除该参数.
-    OT:
-    """
-    assert exists(prjdir) and exists(pyfile)
-    # prettify paths
-    prjdir = file_sniffer.prettify_dir(abspath(prjdir))
-    # '../testflight/' -> 'D:/myprj/testflight/'
-    pyfile = file_sniffer.prettify_file(abspath(pyfile))
-    # '../testflight/test_app_launcher.py'
-    # -> 'D:/myprj/testflight/test_app_launcher.py'
-    
-    ast_analyser = AstAnalyser(pyfile)
-    global ast_tree, ast_indents
-    ast_tree = ast_analyser.main()
-    # -> {lino: [(obj_type, obj_val), ...]}
-    ast_indents = ast_analyser.get_lino_indent_dict()
-    # -> {lino: indent}
-    
-    global module_analyser
-    module_analyser = ModuleAnalyser(
-        prjdir, pyfile, ast_tree, ast_indents
-    )
-    
-    runner = VirtualRunner()
-    runner.main()
 
 
 class VirtualRunner:
@@ -68,16 +9,18 @@ class VirtualRunner:
     虚拟运行机将分析 pyfile 并生成对象之间的调用关系.
     """
     
-    def __init__(self):
-        self.writer = Writer(module_analyser.get_top_module())
+    def __init__(self, module_analyser, ast_tree, ast_indents):
+        self.module_analyser = module_analyser
+        self.ast_tree = ast_tree
+        self.ast_indents = ast_indents
         
+        self.writer = Writer(module_analyser.get_top_module())
         self.module_linos = module_analyser.indexing_module_linos()
         # -> {module: [lino, ...]}
         
         self.assign_analyser = AssignAnalyser(
             module_analyser, ast_tree, ast_indents
         )
-        
         self.assign_reachables = self.assign_analyser.top_assigns_prj_only
         # -> {var: module}
         self.assign_reached = {}  # {var: feeler}
@@ -99,10 +42,10 @@ class VirtualRunner:
     
     def main(self):
         """
-        
+
         PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果 (或 res
         /sample/test_app_launcher(ast_helper_result).json) 完成本方法的制作.
-        
+
         flow:
             testflight.test_app_launcher.module
                 testflight.test_app_launcher.main
@@ -114,13 +57,13 @@ class VirtualRunner:
                     testflight.parser.Parser
             如需追踪观察此流, 请查看 log 中的 [I3914] 级别打印.
         """
-        runtime_module = module_analyser.get_runtime_module()
+        runtime_module = self.module_analyser.get_runtime_module()
         calls = self.run_block(runtime_module)
         calls = self.writer.record(runtime_module, calls)
         self.recurse_module_called(calls)
         
         self.writer.show()
-        
+    
     def recurse_module_called(self, calls):
         for i in calls:
             child_calls = self.run_block(i)
@@ -202,7 +145,7 @@ class VirtualRunner:
                         }
                 4. 在控制台找到调用方所在的日志行, 分析从 I4252 到 I3914 之间的日志内容
         """
-        ast_line = ast_tree.get(lino)
+        ast_line = self.ast_tree.get(lino)
         # lk.logd(ast_line, length=12)
         # -> [(obj_type, obj_val), ...]
         
@@ -224,7 +167,7 @@ class VirtualRunner:
     
     def parse_arg(self, arg: str):
         pass
-        
+    
     def parse_assign(self, assign: dict):
         """
         IN: assign: e.g. {"init": "Init"}
@@ -313,18 +256,3 @@ class VirtualRunner:
         lk.logt('[E1036]', 'a function def found in block region, this should '
                            'not be happend', data)
         raise Exception
-
-
-# ------------------------------------------------
-
-if __name__ == '__main__':
-    # main(
-    #     prjdir='../',
-    #     pyfile='../testflight/app.py'
-    # )
-
-    # TEST
-    main(
-        prjdir='../',
-        pyfile='../temp/in.py'
-    )

@@ -1,21 +1,25 @@
-class CallFlow:
+class CallStream:
     """
     data format:
-        flow: [CallBag1, CallBag2, ...]
+        stream: [CallPack, ...]
     """
     
     def __init__(self):
-        self.flow = []
+        self.stream = []
+
+    def update(self, packet):
+        self.stream.append(packet)
 
 
-class CallBag:
+class CallPack:
     """
     data format:
-        bag: {filepath1: [module1, module2, ...], filepath2: [...], ...}
+        packet: {filepath: [module, ...], ...}
     """
     
     def __init__(self):
-        self.bag = {}
+        self.packet = {}
         
     def update(self, filepath, *modules):
-        pass
+        node = self.packet.setdefault(filepath, [])
+        node.extend(modules)
