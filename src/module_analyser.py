@@ -351,8 +351,4 @@ class ModuleItem:
     """
     
     def __init__(self, module):
-        pass
-    
-    
-    
-
+        self.module = module
