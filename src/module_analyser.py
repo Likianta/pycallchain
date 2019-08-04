@@ -323,3 +323,36 @@ class ModuleAnalyser(ModuleHelper):
         """
         
         return module_linos
+
+
+class ModuleItem:
+    """
+    data format:
+        {
+            module: {
+                pyfile: str
+                indent: int
+                linos: list
+                type: str. 'module'/'class'/'method'
+                parent: list
+            }
+        }
+        
+    e.g. module = 'src.app.main.child_method'
+        -> {
+            'src.app.main.child_method': {
+                'pyfile': '{PRJ}/src/app.py',
+                'indent': 0,
+                'linos': [3, 7, 8, 9, 11, 12],
+                'type': 'method',
+                'parent': ['src.app', 'src.app.main']
+            }
+        }
+    """
+    
+    def __init__(self, module):
+        pass
+    
+    
+    
+

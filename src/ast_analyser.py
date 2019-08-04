@@ -3,12 +3,9 @@ from ast import parse as ast_parse, walk as ast_walk
 
 
 class AstAnalyser:
-    file = ''
     root = None
     
     def __init__(self, file):
-        self.file = file
-        
         with open(file, mode='r', encoding='utf-8-sig') as f:
             text = f.read()
         self.root = ast_parse(text)

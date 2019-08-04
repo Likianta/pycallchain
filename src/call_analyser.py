@@ -9,6 +9,9 @@ class CallStream:
 
     def update(self, packet):
         self.stream.append(packet)
+        
+    def get_stream(self):
+        return self.stream
 
 
 class CallPack:

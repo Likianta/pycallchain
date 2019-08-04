@@ -2,6 +2,7 @@ from lk_utils.lk_logger import lk
 
 from src.assign_analyser import AssignAnalyser
 from src.writer import Writer
+from src.call_analyser import CallPack, CallStream
 
 
 class VirtualRunner:
@@ -25,6 +26,8 @@ class VirtualRunner:
         # -> {var: module}
         self.assign_reached = {}  # {var: feeler}
         
+        self.call_stream = CallStream()
+        self.call_pack = CallPack()
         self.call_chain = []
         self.outer_call_chain = []
         
@@ -40,12 +43,14 @@ class VirtualRunner:
             # "<class '_ast.Name'>"       : self.parse_name,
         }
     
-    def main(self):
+    def main(self, launch_file):
         """
 
         PS: 请配合 src.utils.ast_helper.dump_by_filter_schema() 的输出结果 (或 res
         /sample/test_app_launcher(ast_helper_result).json) 完成本方法的制作.
-
+        
+        IN: launch_file
+        
         flow:
             testflight.test_app_launcher.module
                 testflight.test_app_launcher.main
@@ -58,10 +63,20 @@ class VirtualRunner:
             如需追踪观察此流, 请查看 log 中的 [I3914] 级别打印.
         """
         runtime_module = self.module_analyser.get_runtime_module()
+        pack = CallPack()
+        pack.update(launch_file, runtime_module)
+        
+        self.call_stream.update(pack)
+        self.call_pack.update(launch_file, runtime_module)
+        
+        self.run_call_steam()
+        
+        # DEL
         calls = self.run_block(runtime_module)
         calls = self.writer.record(runtime_module, calls)
         self.recurse_module_called(calls)
         
+        # TEST
         self.writer.show()
     
     def recurse_module_called(self, calls):
@@ -70,6 +85,22 @@ class VirtualRunner:
             child_calls = self.writer.record(i, child_calls)
             # lk.logt('[I4429]', len(child_calls), child_calls)
             self.recurse_module_called(child_calls)
+
+    # ------------------------------------------------ runners
+    
+    def run_call_steam(self):
+        """
+        IN: self.call_stream
+        OT: self.call_stream (udpated)
+        """
+        for pack in self.call_stream.get_stream():
+            self.run_call_pack(pack)
+    
+    def run_call_pack(self):
+        """
+        IN: old call_pack
+        OT: new call_pack
+        """
     
     def run_block(self, current_module: str):
         """
