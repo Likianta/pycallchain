@@ -36,12 +36,12 @@ class VirtualRunner:
         """
 
         """
+        self.module_helper.bind_file(pyfile)
         
-        # ------------------------------------------------ init analysers
-
         ast_analyser = AstAnalyser(pyfile)
+        
         module_analyser = ModuleIndexing(
-            top_module=self.module_helper.get_top_module(pyfile),
+            module_helper=self.module_helper,
             ast_tree=ast_analyser.main(),
             ast_indents=ast_analyser.get_lino_indent_dict()
         )

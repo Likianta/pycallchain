@@ -5,7 +5,6 @@ from lk_utils.lk_logger import lk
 
 
 class ModuleHelper:
-    
     top_module = ''
     runtime_module = ''
     
@@ -66,13 +65,25 @@ class ModuleHelper:
     def get_prj_modules(self):
         return self.prj_modules
     
+    def get_prj_module(self, module) -> str:
+        """
+        IN: self.prj_modules: tuple
+        OT: prj_module: str
+        """
+        while module:
+            if module in self.prj_modules:
+                return module
+            else:
+                module = self.get_module_seg(module, 'l1')
+        return ''  # 说明此 module 不存在于 prj_modules.
+    
     def get_top_module(self):
         assert self.top_module, \
             'please call ModuleHelper#bind_file() first.'
         return self.top_module
     
     def get_runtime_module(self):
-        assert self.runtime_module,\
+        assert self.runtime_module, \
             'please call ModuleHelper#bind_file() first.'
         return self.runtime_module
     
@@ -95,7 +106,8 @@ class ModuleHelper:
                 'r0': 取末尾片段 -> 'C'
                 'r1': 取非第一个片段 -> 'B.C'
         """
-        assert '.' in module
+        if '.' not in module:
+            return ''
         if cut == 'l0':
             return module.split('.', 1)[0]
         elif cut == 'l1':
@@ -116,11 +128,6 @@ class ModuleHelper:
         """
         return fpath.replace(self.prjdir, '', 1).replace('/', '.')[:-3]
         # fpath = 'D:/myprj/src/app.py' -> 'src.app'
-
-    # ------------------------------------------------ filters
-    
-    def filter_prj_modules(self, unknown_modules):
-        pass  # DEL: this is not useful.
     
     # ------------------------------------------------ checks
     
@@ -168,22 +175,20 @@ class ModuleIndexing:
     产生) 等.
     """
     
-    def __init__(self, top_module, ast_tree, ast_indents):
+    def __init__(self, module_helper, ast_tree, ast_indents):
         """
         ARGS:
-            top_module: str
+            module_helper: ModuleHelper.
             ast_tree: dict. 用于定位和获取指定行号的抽象行信息.
             ast_indents: dict. 用于定位和获取指定行号的缩进位置.
         """
-        self.top_module = top_module
+        self.module_helper = module_helper
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
-        
-    def main(self, master_module='', linos=None):
+    
+    def main(self, master_module='', linos=None):  # DEL
         """
-        
-        ARGS:
-            master_module: str.
+        IN: master_module: str.
                 当为空时, 将使用默认值 self.top_module (e.g. 'src.app')
                 不为空时, 请注意传入的是当前要观察的 module 的上一级 module. 例如我们要编译
                     src.app.main.child_method 所在的层级, 则 top_module 应传入 src
@@ -203,18 +208,20 @@ class ModuleIndexing:
                 2, 5], 'src.app.aaa.bbb.ccc': [3, 4]} 作为编译结果.
                 注意: 指定的范围的开始位置的缩进必须小于等于结束位置的缩进 (空行除外).
                 如果该参数为 None, 则默认使用所有行号 (`range(0, len(code_lines))`).
+        OT: (<dict module_linos>, <list prj_modules>)
         """
         if master_module == '':
-            master_module = self.top_module
+            master_module = self.module_helper.get_top_module()
             assert linos is None
             linos = list(self.ast_indents.keys())
             # the linos are already sorted.
         else:
             assert linos is not None
-
-        return self.indexing_module_linos(master_module, linos)
-
-    def indexing_module_linos(self, master_module, linos):
+        
+        return (self.indexing_module_linos(master_module, linos),
+                self.find_prj_modules(linos))
+    
+    def indexing_module_linos(self, master_module, linos) -> dict:
         """
         获取 pyfile 内每个 module 对应的行号范围.
         根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
@@ -250,18 +257,9 @@ class ModuleIndexing:
                 于读取该 module 对应的区间范围, 逐行分析每条语句, 并进一步发现新的调用关系,
                 以此产生裂变效应. 详见 src.analyser.VirtualRunner#main().
         """
-        
         lk.logd('indexing module linos', master_module, linos)
         
         # ------------------------------------------------
-        
-        def eval_ast_line():
-            ast_line = self.ast_tree[lino]  # type: list
-            # ast_line is type of list, assert it not empty.
-            assert ast_line
-            # here we only take its first element. which will show us method or
-            # class definitions.
-            return ast_line[0]
         
         # ast_defs: abstract syntax tree definitions
         ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
@@ -276,7 +274,7 @@ class ModuleIndexing:
         for lino in linos:
             # lk.loga(lino)
             
-            obj_type, obj_val = eval_ast_line()
+            obj_type, obj_val = self.eval_ast_line(lino)
             # -> "<class '_ast.FunctionDef'>", 'main'
             
             indent = self.ast_indents.get(lino, -1)
@@ -337,10 +335,6 @@ class ModuleIndexing:
             # update last_indent
             last_indent = indent
         
-        # DEL: sort the values
-        # for lino_list in module_linos.values():
-        #     lino_list.sort()
-        
         lk.logt('[D3421]', indent_module_holder)
         lk.logt('[I4204]', module_linos)
         """
@@ -356,27 +350,85 @@ class ModuleIndexing:
         """
         
         return module_linos
+    
+    def find_prj_modules(self, linos):
+        prj_modules = []
+        
+        # ast_imps: abstract syntax tree imports
+        ast_imps = ("<class '_ast.ImportFrom'>", "<class '_ast.Import'>")
+    
+        for lino in linos:
+            # lk.loga(lino)
+            
+            obj_type, obj_val = self.eval_ast_line(lino)
+            # -> "<class '_ast.FunctionDef'>", 'main'
+            
+            if obj_type in ast_imps:
+                """
+                obj_type = "<class '_ast.ImportFrom'>"
+                obj_val = {"lk_utils.lk_logger.lk": "lk"}
+                """
+                for module in obj_val:
+                    prj_module = self.module_helper.get_prj_module(module)
+                    if prj_module:
+                        prj_modules.append(prj_module)
+                        
+        return prj_modules
+
+    # ------------------------------------------------
+
+    def eval_ast_line(self, lino):
+        ast_line = self.ast_tree[lino]  # type: list
+        # ast_line is type of list, assert it not empty.
+        assert ast_line
+        # here we only take its first element. which will show us method or
+        # class definitions.
+        return ast_line[0]
 
 
 class ModuleAnalyser:
     
-    def __init__(self, line_parser, ast_tree, ast_indents):
-        self.line_parser = line_parser
+    def __init__(self, module_helper, ast_tree, ast_indents):
+        from src.line_parser import LineParser
+        self.line_parser = LineParser(
+            module_helper, ast_tree, ast_indents
+        )
+        
+        self.module_indexing = ModuleIndexing(
+            module_helper, ast_tree, ast_indents
+        )
+        
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
-        self.global_vars = []
+        
+        self.module_calls = {}  # format: {module: [call, ...], ...}
     
     def main(self, module_linos: dict):
+        """
+        IN: module_linos
+        OT: self.module_calls (updated)
+        """
         for module, linos in module_linos.items():
             self.analyse_module(module, linos)
+        return self.module_calls
     
     def analyse_module(self, module, linos):
+        """
+        发现该 module 下的与其他 module 之间的调用关系.
+        """
         lk.logd('analyse_module', module, style='■')
+        
+        related_calls = []
+        self.line_parser.reset()
         
         for lino in linos:
             ast_line = self.ast_tree[lino]
-            self.analyse_line()
+            modules = self.analyse_line(ast_line)
+            for m in modules:
+                if m not in related_calls:
+                    related_calls.append(m)
+                    
+        self.module_calls.update({module: tuple(related_calls)})
     
-    def analyse_line(self):
-        pass
-
+    def analyse_line(self, ast_line):
+        return self.line_parser.main(ast_line)

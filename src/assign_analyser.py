@@ -142,3 +142,25 @@ class AssignAnalyser:
             k: v for k, v in assigns.items()
             if self.module_helper.is_prj_module(k)
         }
+
+
+class VarsHolder:
+    
+    def __init__(self):
+        self.global_vars = {}
+        self.vars = {}  # format: {var: module}
+
+    def update_global(self, k, v):
+        self.global_vars.update({k: v})
+
+    def update(self, k, v):
+        self.vars.update({k: v})
+
+    def get(self, var):
+        if var in self.vars:
+            return self.vars.get(var)
+        else:
+            return self.global_vars.get(var)
+    
+    def clear(self):
+        self.vars.clear()
