@@ -3,8 +3,6 @@ from os.path import abspath
 from lk_utils import file_sniffer
 from lk_utils.lk_logger import lk
 
-from src.assign_analyser import AssignAnalyser
-
 
 class ModuleHelper:
     
@@ -148,7 +146,7 @@ class ModuleHelper:
             return False, ''
 
 
-class ModuleAnalyser:
+class ModuleIndexing:
     """
     一些特殊 module 变量:
         top_module: pyfile 所在的 module. 如 'src.app', 'src.app.downloader' 等.
@@ -180,27 +178,9 @@ class ModuleAnalyser:
         self.top_module = top_module
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
-
-        self.assign_analyser = AssignAnalyser(
-            self, ast_tree, ast_indents
-        )
         
-    def main(self):
-        module_linos = self.indexing_module_linos()
-        for module, linos in module_linos.items():
-            pass
-        
-    def analyse_module(self, module, linos):
-        lk.logd('run block', module, style='■')
-    
-    def analyse_line(self):
-        pass
-    
-    def indexing_module_linos(self, master_module='', linos=None):
+    def main(self, master_module='', linos=None):
         """
-        获取 pyfile 内每个 module 对应的行号范围.
-        根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
-        注: 每个 module (无论是父子关系还是兄弟关系) 之间的范围互不重叠.
         
         ARGS:
             master_module: str.
@@ -223,7 +203,23 @@ class ModuleAnalyser:
                 2, 5], 'src.app.aaa.bbb.ccc': [3, 4]} 作为编译结果.
                 注意: 指定的范围的开始位置的缩进必须小于等于结束位置的缩进 (空行除外).
                 如果该参数为 None, 则默认使用所有行号 (`range(0, len(code_lines))`).
+        """
+        if master_module == '':
+            master_module = self.top_module
+            assert linos is None
+            linos = list(self.ast_indents.keys())
+            # the linos are already sorted.
+        else:
+            assert linos is not None
 
+        return self.indexing_module_linos(master_module, linos)
+
+    def indexing_module_linos(self, master_module, linos):
+        """
+        获取 pyfile 内每个 module 对应的行号范围.
+        根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
+        注: 每个 module (无论是父子关系还是兄弟关系) 之间的范围互不重叠.
+        
         IN:
             self.ast_tree: dict. {lino: [(obj_type, obj_val), ...], ...}
                 lino: int. 行号, 从 1 开始数.
@@ -254,13 +250,6 @@ class ModuleAnalyser:
                 于读取该 module 对应的区间范围, 逐行分析每条语句, 并进一步发现新的调用关系,
                 以此产生裂变效应. 详见 src.analyser.VirtualRunner#main().
         """
-        if master_module == '':
-            master_module = self.top_module
-            assert linos is None
-            linos = list(self.ast_indents.keys())
-            # the linos are already sorted.
-        else:
-            assert linos is not None
         
         lk.logd('indexing module linos', master_module, linos)
         
@@ -367,3 +356,27 @@ class ModuleAnalyser:
         """
         
         return module_linos
+
+
+class ModuleAnalyser:
+    
+    def __init__(self, line_parser, ast_tree, ast_indents):
+        self.line_parser = line_parser
+        self.ast_tree = ast_tree
+        self.ast_indents = ast_indents
+        self.global_vars = []
+    
+    def main(self, module_linos: dict):
+        for module, linos in module_linos.items():
+            self.analyse_module(module, linos)
+    
+    def analyse_module(self, module, linos):
+        lk.logd('analyse_module', module, style='■')
+        
+        for lino in linos:
+            ast_line = self.ast_tree[lino]
+            self.analyse_line()
+    
+    def analyse_line(self):
+        pass
+

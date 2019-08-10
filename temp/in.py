@@ -16,7 +16,7 @@ from lk_utils import file_sniffer
 from lk_utils.lk_logger import lk
 
 from src.ast_analyser import AstAnalyser
-from src.module_analyser import ModuleAnalyser
+from src.module_analyser import ModuleIndexing
 from src.writer import Writer
 
 
@@ -54,7 +54,7 @@ def main(prjdir, pyfile):
     # -> {lino: indent}
     
     global module_analyser
-    module_analyser = ModuleAnalyser(
+    module_analyser = ModuleIndexing(
         prjdir, pyfile, ast_tree, ast_indents
     )
     

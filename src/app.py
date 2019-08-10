@@ -15,7 +15,7 @@ from os.path import abspath, exists
 from lk_utils import file_sniffer
 
 from src.ast_analyser import AstAnalyser
-from src.module_analyser import ModuleAnalyser, ModuleHelper
+from src.module_analyser import ModuleIndexing, ModuleHelper
 
 
 class VirtualRunner:
@@ -40,7 +40,7 @@ class VirtualRunner:
         # ------------------------------------------------ init analysers
 
         ast_analyser = AstAnalyser(pyfile)
-        module_analyser = ModuleAnalyser(
+        module_analyser = ModuleIndexing(
             top_module=self.module_helper.get_top_module(pyfile),
             ast_tree=ast_analyser.main(),
             ast_indents=ast_analyser.get_lino_indent_dict()
