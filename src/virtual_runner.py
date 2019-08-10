@@ -3,12 +3,10 @@ from lk_utils.lk_logger import lk
 from src.assign_analyser import AssignAnalyser
 from src.writer import Writer
 from src.call_analyser import CallPack, CallStream
+from src.ast_analyser import AstAnalyser
 
 
-class VirtualRunner:
-    """
-    虚拟运行机将分析 pyfile 并生成对象之间的调用关系.
-    """
+class VirtualRunner2:
     
     def __init__(self, module_analyser, ast_tree, ast_indents):
         self.module_analyser = module_analyser

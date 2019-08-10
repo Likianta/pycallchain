@@ -15,8 +15,40 @@ from os.path import abspath, exists
 from lk_utils import file_sniffer
 
 from src.ast_analyser import AstAnalyser
-from src.module_analyser import ModuleAnalyser
-from src.virtual_runner import VirtualRunner
+from src.module_analyser import ModuleAnalyser, ModuleHelper
+
+
+class VirtualRunner:
+    """
+    虚拟运行机将分析 pyfile 并生成对象之间的调用关系.
+    """
+    
+    def __init__(self, prjdir, pyfile):
+        self.prjdir = prjdir
+        self.call_stream = [pyfile]
+        self.module_helper = ModuleHelper(prjdir)
+    
+    def main(self):
+        for pyfile in self.call_stream:
+            self.run_single_file(pyfile)
+    
+    def run_single_file(self, pyfile: str):
+        """
+
+        """
+        
+        # ------------------------------------------------ init analysers
+
+        ast_analyser = AstAnalyser(pyfile)
+        module_analyser = ModuleAnalyser(
+            top_module=self.module_helper.get_top_module(pyfile),
+            ast_tree=ast_analyser.main(),
+            ast_indents=ast_analyser.get_lino_indent_dict()
+        )
+        
+        module_linos = module_analyser.indexing_module_linos()
+        for module, linos in module_linos.items():
+            pass
 
 
 def main(prjdir, pyfile):
@@ -44,16 +76,6 @@ def main(prjdir, pyfile):
     pyfile = file_sniffer.prettify_file(abspath(pyfile))
     # '../testflight/test_app_launcher.py'
     # -> 'D:/myprj/testflight/test_app_launcher.py'
-    
-    ast_analyser = AstAnalyser(pyfile)
-    ast_tree = ast_analyser.main()
-    # -> {lino: [(obj_type, obj_val), ...]}
-    ast_indents = ast_analyser.get_lino_indent_dict()
-    # -> {lino: indent}
-    
-    module_analyser = ModuleAnalyser(
-        prjdir, pyfile, ast_tree, ast_indents
-    )
     
     runner = VirtualRunner(module_analyser, ast_tree, ast_indents)
     runner.main()

@@ -1,0 +1,2 @@
+class LineParser:
+    pass

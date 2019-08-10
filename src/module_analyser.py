@@ -3,18 +3,27 @@ from os.path import abspath
 from lk_utils import file_sniffer
 from lk_utils.lk_logger import lk
 
+from src.assign_analyser import AssignAnalyser
+
 
 class ModuleHelper:
     
-    def __init__(self, prjdir, pyfile):
+    top_module = ''
+    runtime_module = ''
+    
+    def __init__(self, prjdir, exclude_dirs=None):
         self.prjdir = prjdir
+        # self.top_module = self.get_module_by_filepath(pyfile)
+        # self.runtime_module = self.top_module + '.module'
+        self.prj_modules = self.load_prj_modules(exclude_dirs)  # -> [modules]
+    
+    def bind_file(self, pyfile):
         self.top_module = self.get_module_by_filepath(pyfile)
         self.runtime_module = self.top_module + '.module'
-        self.prj_modules = self.load_prj_modules()  # -> [modules]
     
     # ------------------------------------------------ loads
     
-    def load_prj_modules(self, exclude_dirs=None) -> list:
+    def load_prj_modules(self, exclude_dirs=None) -> tuple:
         """
         获得项目所有可导入的模块路径.
 
@@ -47,8 +56,8 @@ class ModuleHelper:
                 for f in pyfiles:
                     all_pyfiles.remove(f)
         
-        prj_modules = [self.get_module_by_filepath(x) for x in all_pyfiles]
-        # -> ['src.app', 'src.downloader', ...]
+        prj_modules = tuple(self.get_module_by_filepath(x) for x in all_pyfiles)
+        # -> ('src.app', 'src.downloader', ...)
         
         lk.loga(len(all_pyfiles), prj_modules)
         
@@ -56,10 +65,17 @@ class ModuleHelper:
     
     # ------------------------------------------------ gets
     
+    def get_prj_modules(self):
+        return self.prj_modules
+    
     def get_top_module(self):
+        assert self.top_module, \
+            'please call ModuleHelper#bind_file() first.'
         return self.top_module
     
     def get_runtime_module(self):
+        assert self.runtime_module,\
+            'please call ModuleHelper#bind_file() first.'
         return self.runtime_module
     
     @staticmethod
@@ -102,11 +118,16 @@ class ModuleHelper:
         """
         return fpath.replace(self.prjdir, '', 1).replace('/', '.')[:-3]
         # fpath = 'D:/myprj/src/app.py' -> 'src.app'
+
+    # ------------------------------------------------ filters
+    
+    def filter_prj_modules(self, unknown_modules):
+        pass  # DEL: this is not useful.
     
     # ------------------------------------------------ checks
     
     def is_top_module(self, module: str):
-        return module == self.top_module
+        return module in self.prj_modules
     
     @staticmethod
     def is_runtime_module(module: str):
@@ -127,7 +148,7 @@ class ModuleHelper:
             return False, ''
 
 
-class ModuleAnalyser(ModuleHelper):
+class ModuleAnalyser:
     """
     一些特殊 module 变量:
         top_module: pyfile 所在的 module. 如 'src.app', 'src.app.downloader' 等.
@@ -140,32 +161,56 @@ class ModuleAnalyser(ModuleHelper):
                 4 | def bbb():
                 5 |      pass
                 6 |
-            其中 [1, 2, 3, 6] 是 runtime_module 的区间
+            其中 linos = [1, 2, 3, 6] 是 runtime_module 的区间.
             runtime_module 的表示方法为在 top_module 后加 '.module' 如 'src.app
             .module', 'src.app.downloader.module' 等.
     除此之外的其他的 module 变量, 通常是指定义层的 module, 目前有 function defined 和
-    class defined 两大类. 如 'src.app.main' (由 `def main():` 产生), 'src.app.Init'
-    (由 `class Init:` 产生), 'src.app.Init.main' (由 `class Init:\ndef main(
-    self):` 产生) 等.
+    class defined 两大类. 如 'src.app.main' (由 `def main()` 产生), 'src.app.Init'
+    (由 `class Init` 产生), 'src.app.Init.main' (由 `class Init:  def main(self):`
+    产生) 等.
     """
     
-    def __init__(self, prjdir, pyfile, ast_tree, ast_indents):
-        super().__init__(prjdir, pyfile)
+    def __init__(self, top_module, ast_tree, ast_indents):
+        """
+        ARGS:
+            top_module: str
+            ast_tree: dict. 用于定位和获取指定行号的抽象行信息.
+            ast_indents: dict. 用于定位和获取指定行号的缩进位置.
+        """
+        self.top_module = top_module
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
+
+        self.assign_analyser = AssignAnalyser(
+            self, ast_tree, ast_indents
+        )
+        
+    def main(self):
+        module_linos = self.indexing_module_linos()
+        for module, linos in module_linos.items():
+            pass
+        
+    def analyse_module(self, module, linos):
+        lk.logd('run block', module, style='■')
+    
+    def analyse_line(self):
+        pass
     
     def indexing_module_linos(self, master_module='', linos=None):
         """
+        获取 pyfile 内每个 module 对应的行号范围.
         根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
-
+        注: 每个 module (无论是父子关系还是兄弟关系) 之间的范围互不重叠.
+        
         ARGS:
             master_module: str.
-                当为空时, 将使用默认值 self.top_module: 'src.app'
+                当为空时, 将使用默认值 self.top_module (e.g. 'src.app')
                 不为空时, 请注意传入的是当前要观察的 module 的上一级 module. 例如我们要编译
                     src.app.main.child_method 所在的层级, 则 top_module 应传入 src
                     .app.main. 用例参考: src.analyser.AssignAnalyser#update
                     _assigns
-            linos: list. 您可以自定义要读取的 module 范围, 本方法会仅针对这个区间进行编译.
+            linos: None/list. 您可以自定义要读取的 module 范围, 本方法会仅针对这个区间进行
+                编译.
                 例如:
                     1 | def aaa():
                     2 |     def bbb():      # <- start
@@ -174,12 +219,13 @@ class ModuleAnalyser(ModuleHelper):
                     5 |                     # <- end
                     6 | def ddd():
                     7 |     pass
-                则本方法只编译 start=2 - end=5 范围内的数据, 并返回 {'src.app.aaa.bbb'
-                : [2, 5], 'src.app.aaa.bbb.ccc': [3, 4]} 作为编译结果.
+                则本方法只编译 range(2, 5) 范围内的数据, 并返回 {'src.app.aaa.bbb': [
+                2, 5], 'src.app.aaa.bbb.ccc': [3, 4]} 作为编译结果.
                 注意: 指定的范围的开始位置的缩进必须小于等于结束位置的缩进 (空行除外).
+                如果该参数为 None, 则默认使用所有行号 (`range(0, len(code_lines))`).
 
         IN:
-            ast_tree: dict. {lino: [(obj_type, obj_val), ...], ...}
+            self.ast_tree: dict. {lino: [(obj_type, obj_val), ...], ...}
                 lino: int. 行号, 从 1 开始数.
                 obj_type: str. 对象类型, 例如 "<class 'FunctionDef'>" 等. 完整的支持
                     列表参考 src.utils.ast_helper.AstHelper#eval_node().
@@ -188,7 +234,7 @@ class ModuleAnalyser(ModuleHelper):
                         (str) 'print'
                         (dict) {'src.downloader.Downloader':
                             'src.downloader.Downloader'} (多用于描述 Import)
-            lino_indent: dict. {lino: indent, ...}. 由 AstHelper#create
+            self.ast_indents: dict. {lino: indent, ...}. 由 AstHelper#create
                 _lino_indent_dict() 提供.
                 lino: int. 行号, 从 1 开始数.
                 indent: int. 该行的列缩进位置, 为 4 的整数倍数, 如 0, 4, 8, 12 等.
@@ -224,13 +270,14 @@ class ModuleAnalyser(ModuleHelper):
             ast_line = self.ast_tree[lino]  # type: list
             # ast_line is type of list, assert it not empty.
             assert ast_line
-            # here we only take its first element.
+            # here we only take its first element. which will show us method or
+            # class definitions.
             return ast_line[0]
         
-        # ast_defs: ast definitions
+        # ast_defs: abstract syntax tree definitions
         ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
         indent_module_holder = {}  # format: {indent: module}
-        module_linos = {}  # format: {module: lino_list}
+        module_linos = {}  # format: {module: linos}
         
         last_indent = 0
         # last_indent 初始化值不影响方法的正常执行. 因为我们事先能保证 linos 参数的第一个
@@ -241,6 +288,7 @@ class ModuleAnalyser(ModuleHelper):
             # lk.loga(lino)
             
             obj_type, obj_val = eval_ast_line()
+            # -> "<class '_ast.FunctionDef'>", 'main'
             
             indent = self.ast_indents.get(lino, -1)
             """
@@ -255,8 +303,7 @@ class ModuleAnalyser(ModuleHelper):
             
             if indent == -1:
                 indent = last_indent
-                assert obj_type not in ast_defs
-            # assert indent % 4 == 0, (lino, indent)  # TODO
+                # assert obj_type not in ast_defs
             
             # lk.loga(lino, indent, obj_type, obj_val)
             
@@ -264,7 +311,6 @@ class ModuleAnalyser(ModuleHelper):
             # 当 indent >= last_indent 时: 在 indent_holder 中开辟新键.
             # 当 indent < last_indent 时: 从 indent_holder 更新并移除高缩进的键.
             
-            # noinspection PyUnresolvedReferences
             parent_module = indent_module_holder.get(
                 indent - 4, master_module
             )
@@ -273,13 +319,11 @@ class ModuleAnalyser(ModuleHelper):
                 indent = 0, obj_val = 'main'
                 -> indent - 4 = -4
                 -> -4 not in indent_module_dict. so assign default:
-                    parent_module = top_module = 'src.app'
-                -> current_module = 'src.app.main'
+                    parent_module = master_module = 'src.app'
             case 2:
                 indent = 4, obj_val = 'child_method'
                 -> indent - 4 = 0
                 -> parent_module = 'src.app.main'
-                -> current_module = 'src.app.main.child_method'
             """
             if obj_type in ast_defs:
                 # obj_type = "<class 'FunctionDef'>", obj_val = 'main'
@@ -304,9 +348,9 @@ class ModuleAnalyser(ModuleHelper):
             # update last_indent
             last_indent = indent
         
-        # sort
-        for lino_list in module_linos.values():
-            lino_list.sort()
+        # DEL: sort the values
+        # for lino_list in module_linos.values():
+        #     lino_list.sort()
         
         lk.logt('[D3421]', indent_module_holder)
         lk.logt('[I4204]', module_linos)
@@ -323,32 +367,3 @@ class ModuleAnalyser(ModuleHelper):
         """
         
         return module_linos
-
-
-class ModuleItem:
-    """
-    data format:
-        {
-            module: {
-                pyfile: str
-                indent: int
-                linos: list
-                type: str. 'module'/'class'/'method'
-                parent: list
-            }
-        }
-        
-    e.g. module = 'src.app.main.child_method'
-        -> {
-            'src.app.main.child_method': {
-                'pyfile': '{PRJ}/src/app.py',
-                'indent': 0,
-                'linos': [3, 7, 8, 9, 11, 12],
-                'type': 'method',
-                'parent': ['src.app', 'src.app.main']
-            }
-        }
-    """
-    
-    def __init__(self, module):
-        self.module = module

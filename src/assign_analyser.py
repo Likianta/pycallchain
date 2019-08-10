@@ -1,41 +1,41 @@
 from lk_utils.lk_logger import lk
 
-from src.module_analyser import ModuleAnalyser
+from src.module_analyser import ModuleHelper
 
 
 class AssignAnalyser:
     
-    def __init__(self, module_analyser: ModuleAnalyser, ast_tree, ast_indents):
-        self.module_analyser = module_analyser
+    def __init__(self, module_helper: ModuleHelper, ast_tree, ast_indents):
+        self.module_helper = module_helper
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
         
-        self.prj_modules = module_analyser.prj_modules
+        self.prj_modules = module_helper.get_prj_modules()  # type: tuple
         
         self.max_lino = max(ast_indents.keys())
         lk.loga(self.max_lino)
         
         self.top_linos = [
-            lino
-            for lino, indent in ast_indents.items()
+            lino for lino, indent in ast_indents.items()
             if indent == 0
         ]
         
-        runtime_module = module_analyser.get_runtime_module()
+        runtime_module = module_helper.get_runtime_module()
         self.top_assigns = self.update_assigns(runtime_module, self.top_linos)
-        # 注意: self.top_assigns 是包含非项目模块的.
         # -> {'os': 'os', 'downloader': 'testflight.downloader', 'Parser':
         # 'testflight.parser.Parser', 'main': 'testflight.app.main', 'Init':
         # 'testflight.app.Init'}
-        self.top_assigns_prj_only = self.get_only_prj_modules(self.top_assigns)
+        self.top_assigns = self.get_only_prj_modules(self.top_assigns)
+        # -> {'downloader': 'testflight.downloader', 'Parser': 'testflight
+        # .parser.Parser', 'main': 'testflight.app.main', 'Init': 'testflight
+        # .app.Init'}
         lk.loga(self.top_assigns)
-        lk.loga(self.top_assigns_prj_only)
     
     def update_assigns(self, target_module, linos):
         assigns = {}
         
-        module_linos = self.module_analyser.indexing_module_linos(
-            self.module_analyser.get_parent_module(target_module), linos
+        module_linos = self.module_helper.indexing_module_linos(
+            self.module_helper.get_parent_module(target_module), linos
         )
         # 注意: 这里第一个参数传入 get_parent_module(module) 而非 module. 原因详见 src
         # .analyser.ModuleAnalyser#indexing_module_linos() 注释.
@@ -76,7 +76,7 @@ class AssignAnalyser:
     def indexing_assign_reachables(
             self, target_module, module_linos, only_prj_modules=True
     ):
-        if target_module == self.module_analyser.get_runtime_module():
+        if target_module == self.module_helper.get_runtime_module():
             return self.top_assigns_prj_only if only_prj_modules \
                 else self.top_assigns
         
@@ -89,7 +89,7 @@ class AssignAnalyser:
             module = target_module
         else:
             while True:
-                parent_module = self.module_analyser.get_parent_module(
+                parent_module = self.module_helper.get_parent_module(
                     target_module
                 )
                 parent_linos = module_linos[parent_module]
@@ -138,10 +138,7 @@ class AssignAnalyser:
             return assigns
     
     def get_only_prj_modules(self, assigns: dict):
-        new_assigns = {}
-        for var, module in assigns.items():
-            for prj_module in self.prj_modules:
-                if module.startswith(prj_module):
-                    new_assigns[var] = module
-                    break
-        return new_assigns
+        return {
+            k: v for k, v in assigns.items()
+            if self.module_helper.is_prj_module(k)
+        }
