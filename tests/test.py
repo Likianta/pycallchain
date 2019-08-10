@@ -3,11 +3,8 @@ from lk_utils import read_and_write_basic
 
 
 code_snip = """
-import d
-import a.b
-from a import c
-from a.e import f
-
+def main():
+    pass
 """
 
 # text = read_and_write_basic.read_file('../testflight/app.py')

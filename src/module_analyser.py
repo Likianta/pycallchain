@@ -3,6 +3,8 @@ from os.path import abspath
 from lk_utils import file_sniffer
 from lk_utils.lk_logger import lk
 
+from src.line_parser import LineParser
+
 
 class ModuleHelper:
     top_module = ''
@@ -53,10 +55,14 @@ class ModuleHelper:
                 for f in pyfiles:
                     all_pyfiles.remove(f)
         
-        prj_modules = tuple(self.get_module_by_filepath(x) for x in all_pyfiles)
+        prj_modules = tuple(
+            self.get_module_by_filepath(x)
+            for x in all_pyfiles
+        )
         # -> ('src.app', 'src.downloader', ...)
-        
-        lk.loga(len(all_pyfiles), prj_modules)
+
+        lk.loga(len(all_files), len(all_pyfiles))
+        # | lk.loga(len(all_pyfiles), prj_modules)
         
         return prj_modules
     
@@ -129,6 +135,9 @@ class ModuleHelper:
         return fpath.replace(self.prjdir, '', 1).replace('/', '.')[:-3]
         # fpath = 'D:/myprj/src/app.py' -> 'src.app'
     
+    def get_pyfile_by_prj_module(self, prj_module):
+        return self.prjdir + prj_module.replace('.', '/') + '.py'
+    
     # ------------------------------------------------ checks
     
     def is_top_module(self, module: str):
@@ -175,7 +184,7 @@ class ModuleIndexing:
     产生) 等.
     """
     
-    def __init__(self, module_helper, ast_tree, ast_indents):
+    def __init__(self, module_helper: ModuleHelper, ast_tree, ast_indents):
         """
         ARGS:
             module_helper: ModuleHelper.
@@ -185,9 +194,16 @@ class ModuleIndexing:
         self.module_helper = module_helper
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
+        
+        self.top_module = module_helper.get_top_module()
+        self.prj_linos = list(ast_indents.keys())
     
-    def main(self, master_module='', linos=None):  # DEL
+    def indexing_module_linos(self, master_module='', linos=None) -> dict:
         """
+        获取 pyfile 内每个 module 对应的行号范围.
+        根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
+        注: 每个 module (无论是父子关系还是兄弟关系) 之间的范围互不重叠.
+        
         IN: master_module: str.
                 当为空时, 将使用默认值 self.top_module (e.g. 'src.app')
                 不为空时, 请注意传入的是当前要观察的 module 的上一级 module. 例如我们要编译
@@ -208,26 +224,6 @@ class ModuleIndexing:
                 2, 5], 'src.app.aaa.bbb.ccc': [3, 4]} 作为编译结果.
                 注意: 指定的范围的开始位置的缩进必须小于等于结束位置的缩进 (空行除外).
                 如果该参数为 None, 则默认使用所有行号 (`range(0, len(code_lines))`).
-        OT: (<dict module_linos>, <list prj_modules>)
-        """
-        if master_module == '':
-            master_module = self.module_helper.get_top_module()
-            assert linos is None
-            linos = list(self.ast_indents.keys())
-            # the linos are already sorted.
-        else:
-            assert linos is not None
-        
-        return (self.indexing_module_linos(master_module, linos),
-                self.find_prj_modules(linos))
-    
-    def indexing_module_linos(self, master_module, linos) -> dict:
-        """
-        获取 pyfile 内每个 module 对应的行号范围.
-        根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
-        注: 每个 module (无论是父子关系还是兄弟关系) 之间的范围互不重叠.
-        
-        IN:
             self.ast_tree: dict. {lino: [(obj_type, obj_val), ...], ...}
                 lino: int. 行号, 从 1 开始数.
                 obj_type: str. 对象类型, 例如 "<class 'FunctionDef'>" 等. 完整的支持
@@ -257,6 +253,14 @@ class ModuleIndexing:
                 于读取该 module 对应的区间范围, 逐行分析每条语句, 并进一步发现新的调用关系,
                 以此产生裂变效应. 详见 src.analyser.VirtualRunner#main().
         """
+        if master_module == '':
+            master_module = self.top_module
+            assert linos is None
+            linos = self.prj_linos
+            # the linos are already sorted.
+        else:
+            assert linos is not None
+        
         lk.logd('indexing module linos', master_module, linos)
         
         # ------------------------------------------------
@@ -351,13 +355,13 @@ class ModuleIndexing:
         
         return module_linos
     
-    def find_prj_modules(self, linos):
+    def find_prj_modules(self):
         prj_modules = []
         
         # ast_imps: abstract syntax tree imports
         ast_imps = ("<class '_ast.ImportFrom'>", "<class '_ast.Import'>")
-    
-        for lino in linos:
+        
+        for lino in self.prj_linos:
             # lk.loga(lino)
             
             obj_type, obj_val = self.eval_ast_line(lino)
@@ -372,11 +376,43 @@ class ModuleIndexing:
                     prj_module = self.module_helper.get_prj_module(module)
                     if prj_module:
                         prj_modules.append(prj_module)
-                        
+        
         return prj_modules
-
+    
+    def find_global_vars(self, module_linos: dict):
+        """
+        哪些是全局变量:
+            runtime 层级的 Import, ImportFrom
+            runtime 层级的 Assign
+            行内的 `global xxx`
+        """
+        runtime_module = self.module_helper.get_runtime_module()
+        runtime_linos = module_linos[runtime_module]
+        
+        # ------------------------------------------------
+        # runtime 层级的 Import, ImportFrom & runtime 层级的 Assign
+        
+        line_parser = LineParser(None)
+        
+        for lino in runtime_linos:
+            ast_line = self.ast_tree[lino]
+            line_parser.main(ast_line)
+            # line_parser 会自动帮我们处理 ast_line 涉及的 Import, ImportFrom,
+            # Assign 等的变量与 module 的对照关系.
+        
+        # ------------------------------------------------
+        # 行内的 `global xxx`
+        
+        for lino in self.ast_indents:
+            if lino in runtime_linos:
+                continue
+            pass  # TODO
+        
+        out = line_parser.vars_holder.vars  # type: dict
+        return out
+    
     # ------------------------------------------------
-
+    
     def eval_ast_line(self, lino):
         ast_line = self.ast_tree[lino]  # type: list
         # ast_line is type of list, assert it not empty.
@@ -387,30 +423,41 @@ class ModuleIndexing:
 
 
 class ModuleAnalyser:
+    line_parser = None
     
-    def __init__(self, module_helper, ast_tree, ast_indents):
-        from src.line_parser import LineParser
-        self.line_parser = LineParser(
-            module_helper, ast_tree, ast_indents
-        )
-        
-        self.module_indexing = ModuleIndexing(
-            module_helper, ast_tree, ast_indents
-        )
-        
+    def __init__(self, module_helper: ModuleHelper, ast_tree, ast_indents):
+        self.module_helper = module_helper
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
         
         self.module_calls = {}  # format: {module: [call, ...], ...}
     
-    def main(self, module_linos: dict):
+    def main(self):
         """
         IN: module_linos
-        OT: self.module_calls (updated)
+        OT: (A, B)
+                A: self.module_calls (updated)
+                B: prj_modules
         """
+        module_indexing = ModuleIndexing(
+            self.module_helper, self.ast_tree, self.ast_indents
+        )
+        
+        prj_modules = module_indexing.find_prj_modules()
+        
+        module_linos = module_indexing.indexing_module_linos()
+        
+        global_vars = module_indexing.find_global_vars(module_linos)
+        self.line_parser = LineParser(global_vars)
+        
+        # ------------------------------------------------
+        
         for module, linos in module_linos.items():
             self.analyse_module(module, linos)
-        return self.module_calls
+        
+        # ------------------------------------------------
+        
+        return self.module_calls, prj_modules
     
     def analyse_module(self, module, linos):
         """
@@ -427,7 +474,7 @@ class ModuleAnalyser:
             for m in modules:
                 if m not in related_calls:
                     related_calls.append(m)
-                    
+        
         self.module_calls.update({module: tuple(related_calls)})
     
     def analyse_line(self, ast_line):

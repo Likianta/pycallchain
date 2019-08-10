@@ -1,5 +1,5 @@
 from src.ast_analyser import AstAnalyser
-from src.module_analyser import ModuleHelper, ModuleIndexing, ModuleAnalyser
+from src.module_analyser import ModuleAnalyser, ModuleHelper
 
 
 class PyfileAnalyser:
@@ -22,6 +22,4 @@ class PyfileAnalyser:
             self.module_helper, ast_tree, ast_indents
         )
         
-        module_analyser.main()
-        
-        return prj_modules
+        return module_analyser.main()

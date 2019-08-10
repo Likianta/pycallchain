@@ -3,24 +3,16 @@ from lk_utils.lk_logger import lk
 
 class Writer:
     
-    def __init__(self, top_module):
-        self.top_module = top_module  # -> 'testflight.app'
-        
+    def __init__(self):
         self.stacks = []
         
         self.tile_view = {}  # 平铺视图
         self.cascade_view = {}  # 层叠视图
     
     def record(self, caller: str, call_chain: list):
-        self.tile_view.update({caller: call_chain.copy()})
-        
-        filtered_call_chain = [
-            x for x in call_chain
-            if self.is_inner_module(x)
-        ]
-        return filtered_call_chain
+        self.tile_view.update({caller: call_chain})
     
-    def show(self):
+    def show(self, runtime_module):
         """
         IN: self.tile_view: dict. {module: [call1, call2, ...]}
                 e.g. res/sample/pycallchain_tile_view.json
@@ -28,8 +20,6 @@ class Writer:
                 }, module12: {...}, ...}}}
                 e.g. res/sample/pycallchain_cascade_view.json
         """
-        runtime_module = self.top_module + '.module'
-        
         node = self.cascade_view.setdefault(runtime_module, {})
         calls = self.tile_view.get(runtime_module)
         self.recurse(node, calls)
@@ -102,6 +92,3 @@ class Writer:
                     -> i1: module = 'src.app.main.child_method'
                         ->
         """
-    
-    def is_inner_module(self, module: str):
-        return bool(module.startswith(self.top_module))

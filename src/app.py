@@ -13,44 +13,58 @@ abbr note:
 from os.path import abspath, exists
 
 from lk_utils import file_sniffer
+from lk_utils.lk_logger import lk
 
-from src.ast_analyser import AstAnalyser
-from src.module_analyser import ModuleIndexing, ModuleHelper
+from src.module_analyser import ModuleHelper
+from src.pyfile_analyser import PyfileAnalyser
+from src.writer import Writer
 
 
 class VirtualRunner:
     """
     虚拟运行机将分析 pyfile 并生成对象之间的调用关系.
+    
+    docs: docs/call flow 实现方案.txt
     """
     
     def __init__(self, prjdir, pyfile):
         self.prjdir = prjdir
-        self.call_stream = [pyfile]
+        self.pyfile = pyfile
+        
         self.module_helper = ModuleHelper(prjdir)
+        self.pyfile_analyser = PyfileAnalyser(self.module_helper)
+        self.writer = Writer()
     
     def main(self):
-        for pyfile in self.call_stream:
-            self.run_single_file(pyfile)
+        call_stream = [self.pyfile]
+        
+        for pyfile in call_stream:
+            lk.logd(pyfile, style='◆')
+            
+            module_calls, prj_modules = self.pyfile_analyser.main(pyfile)
+            """
+            module_calls: {module1: [call1, call2, ...], ...}
+            prj_modules: [prj_module1, prj_module2, ...]
+            """
+
+            # ------------------------------------------------
+            
+            for module, calls in module_calls.items():
+                lk.loga(module, len(calls), calls)
+                self.writer.record(module, calls)
+
+            # ------------------------------------------------
+            
+            new_pyfiles = self.get_new_pyfiles(prj_modules)
+            for i in new_pyfiles:
+                if i not in call_stream:
+                    call_stream.append(i)
     
-    def run_single_file(self, pyfile: str):
-        """
-
-        """
-        self.module_helper.bind_file(pyfile)
-        
-        ast_analyser = AstAnalyser(pyfile)
-        
-        module_analyser = ModuleIndexing(
-            module_helper=self.module_helper,
-            ast_tree=ast_analyser.main(),
-            ast_indents=ast_analyser.get_lino_indent_dict()
-        )
-        
-        module_linos = module_analyser.indexing_module_linos()
-        for module, linos in module_linos.items():
-            pass
-
-
+    def get_new_pyfiles(self, prj_modules):
+        return [self.module_helper.get_pyfile_by_prj_module(x)
+                for x in prj_modules]
+            
+            
 def main(prjdir, pyfile):
     """
     假设测试项目为 testflight, 启动文件为 testflight/test_app_launcher.py.
@@ -77,7 +91,7 @@ def main(prjdir, pyfile):
     # '../testflight/test_app_launcher.py'
     # -> 'D:/myprj/testflight/test_app_launcher.py'
     
-    runner = VirtualRunner(module_analyser, ast_tree, ast_indents)
+    runner = VirtualRunner(prjdir, pyfile)
     runner.main()
 
 
@@ -94,3 +108,7 @@ if __name__ == '__main__':
         prjdir='../',
         pyfile='../temp/in.py'
     )
+
+    lk.print_important_msg(False)
+    lk.over()
+    # lk.dump_log()

@@ -1,15 +1,35 @@
 from lk_utils.lk_logger import lk
 
-from src.assign_analyser import VarsHolder, AssignAnalyser
+
+class VarsHolder:
+    
+    def __init__(self, global_vars=None):
+        if global_vars:
+            self.global_vars = global_vars
+        else:
+            self.global_vars = {}
+        self.vars = {}  # format: {var: module}
+    
+    def update_global(self, var, module):
+        self.global_vars.update({var: module})
+    
+    def update(self, var, module):
+        self.vars.update({var: module})
+    
+    def get(self, var):
+        if var in self.vars:
+            return self.vars.get(var)
+        else:
+            return self.global_vars.get(var)
+    
+    def clear(self):
+        self.vars.clear()
 
 
 class LineParser:
     
-    def __init__(self, module_helper, ast_tree, ast_indents):
-        self.assign_analyser = AssignAnalyser(
-            module_helper, ast_tree, ast_indents
-        )
-        self.vars_holder = VarsHolder()
+    def __init__(self, global_vars):
+        self.vars_holder = VarsHolder(global_vars)
         
         self.support_methods = {
             "<class '_ast.arg'>"      : self.parse_arg,
@@ -18,8 +38,8 @@ class LineParser:
             "<class '_ast.Call'>"     : self.parse_call,
             # "<class '_ast.ClassDef'>"   : self.parse_class_def,
             # "<class '_ast.FunctionDef'>": self.parse_function_def,
-            # "<class '_ast.Import'>"     : self.parse_import,
-            # "<class '_ast.ImportFrom'>" : self.parse_import,
+            "<class '_ast.Import'>"     : self.parse_import,
+            "<class '_ast.ImportFrom'>" : self.parse_import,
             # "<class '_ast.Name'>"       : self.parse_name,
         }
     
@@ -37,7 +57,7 @@ class LineParser:
         IN: ast_line
             self.vars_holder
         OT: self.vars_holder (updated)
-            [module, ...]
+            module_called: list. [module, ...]
         
         caller: src.module_analyser.ModuleAnalyser#analyse_line
         """
@@ -157,3 +177,11 @@ class LineParser:
     def parse_function_def(data):
         # raise Exception
         pass
+
+    def parse_import(self, data: dict):
+        """
+        IN: data: dict. {module: var}. e.g. {"lk_utils.lk_logger.lk": "lk"}
+        """
+        for module, var in data.items():
+            self.vars_holder.update(var, module)
+            # update: {"lk": "lk_utils.lk_logger.lk"}
