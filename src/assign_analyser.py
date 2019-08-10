@@ -45,7 +45,7 @@ class AssignAnalyser:
                 """
                 因为 target_module 不能指任自身, 所以应去除.
                 例如 target_module = 'src.app.module', 在源码中, 不能因此自动产生
-                module-src.app.module 的对应关系. 所以不能加入到 assigns 中.
+                `module: src.app.module` 的对应关系. 所以不能加入到 assigns 中.
                 """
                 continue
             var = module.rsplit('.', 1)[1]
