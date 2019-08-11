@@ -36,14 +36,14 @@ class LineParser:
         self.vars_holder = VarsHolder(global_vars)
         
         self.support_methods = {
-            "<class '_ast.arg'>"       : self.parse_arg,
-            "<class '_ast.Assign'>"    : self.parse_assign,
-            "<class '_ast.Attribute'>" : self.parse_attribute,
-            "<class '_ast.Call'>"      : self.parse_call,
-            # "<class '_ast.ClassDef'>"   : self.parse_class_def,
-            # "<class '_ast.FunctionDef'>": self.parse_function_def,
-            "<class '_ast.Import'>"    : self.parse_import,
-            "<class '_ast.ImportFrom'>": self.parse_import,
+            "<class '_ast.arg'>"        : self.parse_arg,
+            "<class '_ast.Assign'>"     : self.parse_assign,
+            "<class '_ast.Attribute'>"  : self.parse_attribute,
+            "<class '_ast.Call'>"       : self.parse_call,
+            "<class '_ast.ClassDef'>"   : self.parse_class_def,
+            "<class '_ast.FunctionDef'>": self.parse_function_def,
+            "<class '_ast.Import'>"     : self.parse_import,
+            "<class '_ast.ImportFrom'>" : self.parse_import,
             # "<class '_ast.Name'>"       : self.parse_name,
         }
     
@@ -53,7 +53,7 @@ class LineParser:
     def get_global_vars(self):
         return self.vars_holder.global_vars
     
-    def reset(self, var_reachables):
+    def reset(self, var_reachables, master_module):
         """
         caller: src.module_analyser.ModuleAnalyser#analyse_module
         """
@@ -61,6 +61,8 @@ class LineParser:
             self.vars_holder.reset(var_reachables)
         else:
             self.vars_holder.clear()
+        if master_module:
+            self.vars_holder.update('self', master_module)
     
     # ------------------------------------------------
     
@@ -85,7 +87,10 @@ class LineParser:
             method = self.support_methods.get(obj_type, self.do_nothing)
             res = method(obj_val)
             if res:
-                out.append(res)
+                if isinstance(res, list):
+                    out.extend(res)
+                else:
+                    out.append(res)
         return out
     
     # ------------------------------------------------ support_methods
@@ -105,8 +110,11 @@ class LineParser:
         OT: self.vars_holder (updated)
             f'<{arg}>': str. 一个特殊的 module, 由 '<>' 包裹的.
         """
-        self.vars_holder.update(arg, f'<{arg}>')
-        return f'<{arg}>'
+        module = self.vars_holder.get(arg)
+        if module is None:
+            module = f'<{arg}>'
+        self.vars_holder.update(arg, module)
+        return module
     
     def parse_assign(self, assign: dict):
         """
@@ -114,7 +122,12 @@ class LineParser:
                 键是新变量, 值来自 self.assign_reachables.
         OT: (updated) self.assign_reached
         """
+        out = []
         for new_var, known_var in assign.items():
+            if known_var.startswith('self.'):
+                known_var = known_var.replace(
+                    'self', self.vars_holder.get('self'), 1
+                )
             module = self.vars_holder.get(known_var.split('.', 1)[0])
             lk.logt('[D0505]', known_var, module)
             """
@@ -127,8 +140,10 @@ class LineParser:
                 # source_line = 'a = os.path(...)' -> known_var = 'os.path'
                 continue
             else:
+                out.append(module)
                 # source_line = 'a = Init()' -> known_var = 'Init'
                 self.vars_holder.update(new_var, module)
+        return out
     
     def parse_attribute(self, call: str) -> str:
         """
@@ -141,6 +156,11 @@ class LineParser:
                 .downloader.Downloader' -> 更新到 self.call_chain 中.
         OT: (updated) self.call_chain
         """
+        
+        if call.startswith('self.'):
+            call = call.replace(
+                'self', self.vars_holder.get('self'), 1
+            )
         if '.' in call:
             head, tail = call.split('.', 1)
         else:
@@ -192,6 +212,7 @@ class LineParser:
         var = data  # -> 'Init'
         module = self.top_module + '.' + var + '.__init__'
         # -> 'src.app.Init.__init__'
+        lk.logt('[D3903]', 'parse_class_def', var, module)
         self.vars_holder.update(var, module)
     
     def parse_function_def(self, data: str):
@@ -201,6 +222,7 @@ class LineParser:
         """
         var = data  # -> 'main'
         module = self.top_module + '.' + var  # -> 'src.app.main'
+        lk.logt('[D3902]', 'parse_function_def', var, module)
         self.vars_holder.update(var, module)
     
     def parse_import(self, data: dict):

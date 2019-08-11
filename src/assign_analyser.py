@@ -18,6 +18,7 @@ class AssignAnalyser:
             if indent == 0
         ]
         
+        self.top_module = module_helper.get_top_module()
         self.top_assigns = self.find_global_vars()  # type: dict
         # -> {'os': 'os', 'downloader': 'testflight.downloader', 'Parser':
         # 'testflight.parser.Parser', 'main': 'testflight.app.main', 'Init':
@@ -42,14 +43,16 @@ class AssignAnalyser:
             lino for lino, indent in self.ast_indents.items()
             if indent == 0
         )
+        lk.logt('[D3743]', self.top_module, top_linos)
         
         # ------------------------------------------------
         # runtime 层级的 Import, ImportFrom & runtime 层级的 Assign
         
-        line_parser = LineParser()
+        line_parser = LineParser(self.top_module)
         
         for lino in top_linos:
             ast_line = self.ast_tree[lino]
+            lk.logt('[TEMPRINT]_20190811_214127', lino, ast_line)
             line_parser.main(ast_line)
             # line_parser 会自动帮我们处理 ast_line 涉及的 Import, ImportFrom,
             # Assign 等的变量与 module 的对照关系.
@@ -66,10 +69,15 @@ class AssignAnalyser:
     
     def indexing_assign_reachables(
             self, target_module, module_linos
-    ) -> dict:
+    ):
+        """
+        IN: target_module: str. 'src.app.Init.main'
+            module_linos
+        OT: (<dict var_reachables>, <str parent_module>)
+        """
         if self.module_helper.is_runtime_module(target_module):
             # 相当于返回 self.find_global_vars() 的结果.
-            return self.top_assigns
+            return self.top_assigns, ''
         
         if target_module not in module_linos:
             lk.logt('[E2459]', target_module, module_linos)
@@ -99,7 +107,7 @@ class AssignAnalyser:
         # lk.logt('[TEMPRINT]20190811182309', target_module, start_offset,
         #         indent)
         if indent == 0:
-            pass
+            parent_module = ''
         else:
             while True:
                 parent_module = self.module_helper.get_parent_module(
@@ -114,6 +122,10 @@ class AssignAnalyser:
                     break
                 else:
                     continue
+            # TODO
+            parent_module = self.module_helper.get_module_seg(
+                parent_module, 'r0'
+            )  # 'src.app.Init' -> 'Init'
         
         # the end lino reachable
         while end_offset < self.max_lino:
@@ -137,7 +149,7 @@ class AssignAnalyser:
         """
         
         # parse vars
-        line_parser = LineParser()
+        line_parser = LineParser(self.top_module)
         
         ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
         
@@ -146,7 +158,7 @@ class AssignAnalyser:
             if ast_line[0] in ast_defs:
                 line_parser.main(ast_line)
         
-        return line_parser.get_vars()
+        return line_parser.get_vars(), parent_module
     
     def eval_ast_line(self, lino):
         ast_line = self.ast_tree[lino]  # type: list

@@ -266,7 +266,7 @@ class ModuleIndexing:
             # the linos are already sorted.
         else:
             assert linos is not None
-            
+        
         lk.logd('indexing module linos', master_module)
         
         # ------------------------------------------------
@@ -295,7 +295,7 @@ class ModuleIndexing:
             
             if parent_indent in indent_module_holder:
                 parent_module = indent_module_holder[parent_indent]
-
+                
                 if obj_type in ast_defs:
                     # obj_type = "<class 'FunctionDef'>", obj_val = 'main'
                     current_module = parent_module + '.' + obj_val
@@ -311,11 +311,11 @@ class ModuleIndexing:
                     # master_module, self
                     # .runtime_module
                     current_module = parent_module
-
+                
                 # update indent_module_holder
                 indent_module_holder.update({indent: current_module})
                 # -> {0: 'src.app.main'}, {4: 'src.app.main.child_method'}, ...
-
+            
             else:
                 lk.loga(lino, indent, last_module)
                 indent = last_indent
@@ -439,44 +439,48 @@ class ModuleAnalyser:
         module_indexing = ModuleIndexing(
             self.module_helper, self.ast_tree, self.ast_indents
         )
+        prj_modules = module_indexing.find_prj_modules()
+        module_linos = module_indexing.indexing_module_linos()
+        
         assign_analyser = AssignAnalyser(
             self.module_helper, self.ast_tree, self.ast_indents
         )
-        
-        prj_modules = module_indexing.find_prj_modules()
-        
-        module_linos = module_indexing.indexing_module_linos()
-        
-        self.line_parser = LineParser(assign_analyser.top_assigns)
+        self.line_parser = LineParser(
+            self.module_helper.get_top_module(),
+            assign_analyser.top_assigns
+        )
         
         # ------------------------------------------------
         
         for module, linos in module_linos.items():
-            var_reachables = assign_analyser.indexing_assign_reachables(
+            var_reachables, parent_module = assign_analyser \
+                .indexing_assign_reachables(
                 module, module_linos
             )
-            self.analyse_module(module, linos, var_reachables)
+            self.line_parser.reset(var_reachables, parent_module)
+            self.analyse_module(module, linos)
         
         # ------------------------------------------------
         
         return self.module_calls, prj_modules
     
-    def analyse_module(self, module, linos, var_reachables):
+    def analyse_module(self, module, linos):
         """
         发现该 module 下的与其他 module 之间的调用关系.
         """
         lk.logd('analyse_module', module, style='■')
         
         related_calls = []
-        self.line_parser.reset(var_reachables)
         
         for lino in linos:
             ast_line = self.ast_tree[lino]
-            modules = self.analyse_line(ast_line)
-            for m in modules:
+            module_called = self.analyse_line(ast_line)
+            # lk.logt('[D3233]', module_called)
+            for m in module_called:
                 if m not in related_calls:
                     related_calls.append(m)
-        
+
+        lk.logt('[I3259]', related_calls)
         self.module_calls.update({module: tuple(related_calls)})
     
     def analyse_line(self, ast_line):
