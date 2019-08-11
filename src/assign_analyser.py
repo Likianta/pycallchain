@@ -1,12 +1,11 @@
 from lk_utils.lk_logger import lk
 
 from src.line_parser import LineParser
-from src.module_analyser import ModuleHelper
 
 
 class AssignAnalyser:
     
-    def __init__(self, module_helper: ModuleHelper, ast_tree, ast_indents):
+    def __init__(self, module_helper, ast_tree, ast_indents):
         self.module_helper = module_helper
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
@@ -72,6 +71,10 @@ class AssignAnalyser:
             # 相当于返回 self.find_global_vars() 的结果.
             return self.top_assigns
         
+        if target_module not in module_linos:
+            lk.logt('[E2459]', target_module, module_linos)
+            raise Exception
+        
         # ------------------------------------------------
         
         """
@@ -91,6 +94,8 @@ class AssignAnalyser:
         
         # the start lino reachable
         indent = self.ast_indents[start_offset]
+        # lk.logt('[TEMPRINT]20190811182309', target_module, start_offset,
+        #         indent)
         if indent == 0:
             pass
         else:
@@ -98,6 +103,8 @@ class AssignAnalyser:
                 parent_module = self.module_helper.get_parent_module(
                     target_module
                 )
+                # lk.logt('[TEMPRINT]20190811182549', target_module,
+                #         parent_module)
                 parent_linos = module_linos[parent_module]
                 start_offset, end_offset = parent_linos[0], parent_linos[-1] + 1
                 parent_indent = self.ast_indents[start_offset]

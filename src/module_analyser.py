@@ -94,12 +94,16 @@ class ModuleHelper:
             'please call ModuleHelper#bind_file() first.'
         return self.runtime_module
     
-    @staticmethod
-    def get_parent_module(module: str):
+    def get_parent_module(self, module: str):
         if '.' not in module:
             return ''
         else:
-            return module.rsplit('.', 1)[0]
+            # module = module.rsplit('.', 1)[0]
+            # if module in self.prj_modules:
+            #     # 'src.app.main' -> 'src.app'
+            #     module += '.module'
+            # return module
+            return self.get_module_seg(module, 'l1')
     
     @staticmethod
     def get_module_seg(module: str, cut: str):
@@ -271,6 +275,7 @@ class ModuleIndexing:
         indent_module_holder = {}  # format: {indent: module}
         module_linos = {}  # format: {module: linos}
         
+        last_parent_module = ''
         last_indent = 0
         # last_indent 初始化值不影响方法的正常执行. 因为我们事先能保证 linos 参数的第一个
         # lino 的 indent 一定是正常的, 而伴随着第一个 lino 的循环结尾, last_indent 就能
@@ -322,13 +327,11 @@ class ModuleIndexing:
                 current_module = parent_module + '.' + obj_val
                 # lk.logt('[TEMPRINT]', current_module)
                 # -> 'src.app.main'
-            elif indent > 0:
+            elif indent > 0 and last_parent_module != master_module:
                 current_module = parent_module
             else:
-                current_module = parent_module + '.' + 'module'
+                current_module = parent_module + '.module'
                 # -> 'src.app.module'
-            
-            # lk.loga(parent_module, current_module)
             
             node = module_linos.setdefault(current_module, [])
             node.append(lino)  # NOTE: the lino is in ordered
@@ -337,7 +340,8 @@ class ModuleIndexing:
             indent_module_holder.update({indent: current_module})
             # -> {0: 'src.app.main'}, {4: 'src.app.main.child_method'}, ...
             
-            # update last_indent
+            # update last var
+            last_parent_module = parent_module
             last_indent = indent
         
         lk.logt('[D3421]', indent_module_holder)
@@ -418,6 +422,7 @@ class ModuleAnalyser:
         prj_modules = module_indexing.find_prj_modules()
         
         module_linos = module_indexing.indexing_module_linos()
+        lk.logt('[TEMPRINT]20190811182610', module_linos)
         
         self.line_parser = LineParser(assign_analyser.top_assigns)
         

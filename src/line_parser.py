@@ -77,7 +77,7 @@ class LineParser:
         """
         out = []
         for i in ast_line:
-            obj_type, obj_val = i
+            obj_type, obj_val = i[0], i[1]
             # lk.loga(obj_type, obj_val)
             # obj_type: str. e.g. "<class '_ast.Call'>"
             # obj_val: str/dict. e.g. '__name__', {'os': 'os'}, ...
@@ -91,8 +91,9 @@ class LineParser:
     
     @staticmethod
     def do_nothing(data):
-        lk.logt('[TEMPRINT]', 'nothing todo', data)
+        # lk.logt('[TEMPRINT]', 'nothing todo', data)
         # return ''
+        pass
     
     def parse_arg(self, arg):
         """
