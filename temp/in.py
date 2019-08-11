@@ -209,7 +209,7 @@ class ModuleIndexing:
         获取 pyfile 内每个 module 对应的行号范围.
         根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
         注: 每个 module (无论是父子关系还是兄弟关系) 之间的范围互不重叠.
-        
+
         IN: master_module: str.
                 当为空时, 将使用默认值 self.top_module (e.g. 'src.app')
                 不为空时, 请注意传入的是当前要观察的 module 的上一级 module. 例如我们要编译
@@ -266,14 +266,14 @@ class ModuleIndexing:
             # the linos are already sorted.
         else:
             assert linos is not None
-            
+        
         lk.logd('indexing module linos', master_module)
         
         # ------------------------------------------------
         
         # ast_defs: abstract syntax tree definitions
         ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
-        indent_module_holder = {}  # format: {indent: module}
+        indent_module_holder = {-4: self.top_module}  # format: {indent: module}
         module_linos = {}  # format: {module: linos}
         
         last_module = ''
@@ -287,60 +287,73 @@ class ModuleIndexing:
             # -> "<class '_ast.FunctionDef'>", 'main'
             
             indent = self.ast_indents.get(lino, -1)
-            """
-            special:
-                indent 有一个特殊值 -1, 表示下面这种情况:
-                    def abc():        # -> indent = 0
-                        print('aaa',  # -> indent = 4
-                              'bbb',  # -> indent = 10 -> -1
-                              'ccc')  # -> indent = 10 -> -1
-                当 indent 为 -1 时, 则认为本行的 indent 保持与上次 indent 一致.
-            """
-            
             if indent == -1:
                 indent = last_indent
-                # assert obj_type not in ast_defs
+            parent_indent = indent - 4
             
-            # lk.loga(lino, indent, obj_type, obj_val)
+            # lk.loga(lino, indent, parent_indent, obj_type, obj_val)
             
-            # ------------------------------------------------
-            # 当 indent >= last_indent 时: 在 indent_holder 中开辟新键.
-            # 当 indent < last_indent 时: 从 indent_holder 更新并移除高缩进的键.
+            if parent_indent in indent_module_holder:
+                parent_module = indent_module_holder[parent_indent]
+                
+                if obj_type in ast_defs:
+                    # obj_type = "<class 'FunctionDef'>", obj_val = 'main'
+                    current_module = parent_module + '.' + obj_val
+                    # -> 'src.app.main'
+                elif indent == 0 \
+                        or last_module == self.runtime_module:
+                    current_module = self.runtime_module
+                    # | current_module = parent_module + '.module'
+                else:
+                    # indent > 0 and last_parent_module not in (
+                    # master_module, self
+                    # .runtime_module
+                    current_module = parent_module
+                
+                # update indent_module_holder
+                indent_module_holder.update({indent: current_module})
+                # -> {0: 'src.app.main'}, {4: 'src.app.main.child_method'}, ...
             
-            parent_module = indent_module_holder.get(
-                indent - 4, master_module
-            )
+            else:
+                lk.loga(lino, indent, last_module)
+                current_module = last_module
             """
             case 1:
+                source_code = ```
+                    1 | def main():  # <- cursor
+                    2 |     pass
+                ```
                 indent = 0, obj_val = 'main'
                 -> indent - 4 = -4
-                -> -4 not in indent_module_dict. so assign default:
-                    parent_module = master_module = 'src.app'
+                -> parent_module = 'src.app'
+                -> current_module = 'src.app.main'
             case 2:
+                source_code = ```
+                    1 | def main():
+                    2 |     def child_method():  # <- cursor
+                    3 |         pass
+                ```
                 indent = 4, obj_val = 'child_method'
                 -> indent - 4 = 0
                 -> parent_module = 'src.app.main'
+                -> current_module = 'src.app.main.child_method'
+            case 3:
+                source_code = ```
+                    1 | def main():
+                    2 |     def child_method():
+                    3 |         print('aaa', 'bbb'
+                    4 |               'ccc')  # <- cursor
+                ```
+                indent = 14, obj_val = "'ccc'"
+                -> indent - 4 = 10
+                -> 10 not in indent_module_holder.keys(), so return the fallback
+                   value: 'src.app.main.child_method'
+                -> current_module = 'src.app.main.child_method'
             """
-            if obj_type in ast_defs:
-                # obj_type = "<class 'FunctionDef'>", obj_val = 'main'
-                current_module = parent_module + '.' + obj_val
-                # -> 'src.app.main'
-            elif indent == 0\
-                    or last_module == self.runtime_module:
-                current_module = self.runtime_module
-                # | current_module = parent_module + '.module'
-            else:
-                # indent > 0 and last_parent_module not in (master_module, self
-                # .runtime_module
-                current_module = parent_module
             
             # update module_linos
             node = module_linos.setdefault(current_module, [])
             node.append(lino)  # NOTE: the lino is in ordered
-            
-            # update indent_module_holder
-            indent_module_holder.update({indent: current_module})
-            # -> {0: 'src.app.main'}, {4: 'src.app.main.child_method'}, ...
             
             # update last vars
             last_module = current_module

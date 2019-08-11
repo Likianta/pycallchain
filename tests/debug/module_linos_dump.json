@@ -71,25 +71,20 @@
   ],
   "temp.in.ModuleHelper.get_module_seg": [
     108,
+    109,
     120,
     121,
     122,
     123,
+    124,
     125,
+    126,
     127,
+    128,
     129,
     131,
-    133
-  ],
-  "temp.in": [
-    109,
-    124,
-    126,
-    128,
     132,
-    152,
-    328,
-    329
+    133
   ],
   "temp.in.ModuleHelper.get_module_by_filepath": [
     135,
@@ -105,6 +100,7 @@
   ],
   "temp.in.ModuleHelper.is_runtime_module": [
     151,
+    152,
     153
   ],
   "temp.in.ModuleHelper.is_prj_module": [
@@ -144,83 +140,88 @@
     285,
     286,
     289,
-    300,
+    290,
+    291,
+    292,
+    296,
+    297,
+    299,
     301,
-    310,
+    303,
+    304,
+    305,
     311,
-    324,
-    326,
-    330,
-    335,
-    338,
-    339,
-    342,
-    346,
-    347,
-    349,
-    350,
-    364
+    314,
+    318,
+    319,
+    355,
+    356,
+    359,
+    360,
+    362,
+    363,
+    377
   ],
   "temp.in.ModuleIndexing.find_prj_modules": [
-    366,
-    367,
-    370,
-    372,
-    375,
-    378,
+    379,
+    380,
     383,
-    384,
     385,
-    386,
-    388
+    388,
+    391,
+    396,
+    397,
+    398,
+    399,
+    401
   ],
   "temp.in.ModuleIndexing.eval_ast_line": [
-    392,
-    393,
-    395,
-    398
-  ],
-  "temp.in.ModuleAnalyser": [
-    401,
-    402
-  ],
-  "temp.in.ModuleAnalyser.__init__": [
-    404,
     405,
     406,
-    407,
-    409
+    408,
+    411
   ],
-  "temp.in.ModuleAnalyser.main": [
-    411,
+  "temp.in.ModuleAnalyser": [
+    414,
+    415
+  ],
+  "temp.in.ModuleAnalyser.__init__": [
+    417,
     418,
     419,
-    421,
-    422,
-    425,
-    427,
-    429,
-    433,
+    420,
+    422
+  ],
+  "temp.in.ModuleAnalyser.main": [
+    424,
+    431,
+    432,
     434,
     435,
-    437,
-    441
+    438,
+    440,
+    442,
+    446,
+    447,
+    448,
+    450,
+    454
   ],
   "temp.in.ModuleAnalyser.analyse_module": [
-    443,
-    447,
-    449,
-    450,
-    452,
-    453,
-    454,
-    455,
     456,
-    457,
-    459
+    460,
+    462,
+    463,
+    465,
+    466,
+    467,
+    468,
+    469,
+    470,
+    472
   ],
   "temp.in.ModuleAnalyser.analyse_line": [
-    461,
-    462
+    474,
+    475
   ]
 }

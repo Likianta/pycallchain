@@ -6,7 +6,7 @@ from src.module_analyser import ModuleHelper, ModuleIndexing
 
 def main():
     ifile = '../../temp/in.py'
-    ofile = 'output_module_linos.json'
+    ofile = 'module_linos_dump.json'
     
     ast_ana = AstAnalyser(ifile)
     ast_tree = ast_ana.main()
