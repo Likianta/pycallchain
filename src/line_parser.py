@@ -211,8 +211,9 @@ class LineParser:
         OT: "src.app.Init"
         """
         var = data  # -> 'Init'
-        module = self.top_module + '.' + var + '.__init__'
-        # -> 'src.app.Init.__init__'
+        module = self.top_module + '.' + var
+        # | module = self.top_module + '.' + var + '.__init__'
+        # | -> 'src.app.Init.__init__'
         lk.logt('[D3903]', 'parse_class_def', var, module)
         self.vars_holder.update(var, module)
     
