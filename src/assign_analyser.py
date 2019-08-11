@@ -122,10 +122,7 @@ class AssignAnalyser:
                     break
                 else:
                     continue
-            # TODO
-            parent_module = self.module_helper.get_module_seg(
-                parent_module, 'r0'
-            )  # 'src.app.Init' -> 'Init'
+            # -> parent_module = 'src.app.Init'
         
         # the end lino reachable
         while end_offset < self.max_lino:

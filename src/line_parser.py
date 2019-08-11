@@ -125,10 +125,11 @@ class LineParser:
         out = []
         for new_var, known_var in assign.items():
             if known_var.startswith('self.'):
-                known_var = known_var.replace(
+                module = known_var.replace(
                     'self', self.vars_holder.get('self'), 1
-                )
-            module = self.vars_holder.get(known_var.split('.', 1)[0])
+                )  # 'self.main' -> 'src.app.Init.main'
+            else:
+                module = self.vars_holder.get(known_var.split('.', 1)[0])
             lk.logt('[D0505]', known_var, module)
             """
             case 1:
@@ -158,26 +159,26 @@ class LineParser:
         """
         
         if call.startswith('self.'):
-            call = call.replace(
+            module = call.replace(
                 'self', self.vars_holder.get('self'), 1
-            )
-        if '.' in call:
-            head, tail = call.split('.', 1)
+            )  # 'self.main' -> 'src.app.Init.main'
         else:
-            head, tail = call, ''
+            if '.' in call:
+                head, tail = call.split('.', 1)
+            else:
+                head, tail = call, ''
+            module = self.vars_holder.get(head)
         
-        module = self.vars_holder.get(head)
-        
-        lk.logt('[D0521]', call, module)
-        
-        if module is None:
-            # var = 'os'
-            return ''
-        else:
-            # var = 'downloader.Downloader'
-            if tail:
-                module += '.' + tail
-            return module
+            lk.logt('[D0521]', call, module)
+            
+            if module is None:
+                # var = 'os'
+                return ''
+            else:
+                # var = 'downloader.Downloader'
+                if tail:
+                    module += '.' + tail
+        return module
     
     def parse_call(self, call: str):
         """

@@ -208,7 +208,9 @@ class ModuleIndexing:
         """
         获取 pyfile 内每个 module 对应的行号范围.
         根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
-        注: 每个 module (无论是父子关系还是兄弟关系) 之间的范围互不重叠.
+        注:
+            1. 每个 module (无论是父子关系还是兄弟关系) 之间的范围互不重叠.
+            2. AClass.__init__ 被认作 AClass
         
         IN: master_module: str.
                 当为空时, 将使用默认值 self.top_module (e.g. 'src.app')
@@ -298,7 +300,11 @@ class ModuleIndexing:
                 
                 if obj_type in ast_defs:
                     # obj_type = "<class 'FunctionDef'>", obj_val = 'main'
-                    current_module = parent_module + '.' + obj_val
+                    if obj_val == '__init__':
+                        # source_code = `def __init__(self):`
+                        current_module = parent_module
+                    else:
+                        current_module = parent_module + '.' + obj_val
                     # -> 'src.app.main'
                 elif obj_type in ast_args:
                     current_module = last_module
@@ -470,8 +476,8 @@ class ModuleAnalyser:
         """
         lk.logd('analyse_module', module, style='■')
 
-        lk.logt('[TEMPRINT]_20190811_214927',
-                self.line_parser.get_global_vars())
+        # lk.logt('[TEMPRINT]_20190811_214927',
+        #         self.line_parser.get_global_vars())
         
         related_calls = []
         
