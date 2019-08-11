@@ -22,32 +22,46 @@ class VarsHolder:
         else:
             return self.global_vars.get(var)
     
+    def reset(self, vars_: dict):
+        self.vars = vars_
+    
     def clear(self):
         self.vars.clear()
 
 
 class LineParser:
     
-    def __init__(self, global_vars):
+    def __init__(self, global_vars=None):
         self.vars_holder = VarsHolder(global_vars)
         
         self.support_methods = {
-            "<class '_ast.arg'>"      : self.parse_arg,
-            "<class '_ast.Assign'>"   : self.parse_assign,
-            "<class '_ast.Attribute'>": self.parse_attribute,
-            "<class '_ast.Call'>"     : self.parse_call,
+            "<class '_ast.arg'>"       : self.parse_arg,
+            "<class '_ast.Assign'>"    : self.parse_assign,
+            "<class '_ast.Attribute'>" : self.parse_attribute,
+            "<class '_ast.Call'>"      : self.parse_call,
             # "<class '_ast.ClassDef'>"   : self.parse_class_def,
             # "<class '_ast.FunctionDef'>": self.parse_function_def,
-            "<class '_ast.Import'>"     : self.parse_import,
-            "<class '_ast.ImportFrom'>" : self.parse_import,
+            "<class '_ast.Import'>"    : self.parse_import,
+            "<class '_ast.ImportFrom'>": self.parse_import,
             # "<class '_ast.Name'>"       : self.parse_name,
         }
     
-    def reset(self):
+    def get_vars(self):
+        return self.vars_holder.vars
+    
+    def get_global_vars(self):
+        return self.vars_holder.global_vars
+    
+    def reset(self, var_reachables):
         """
         caller: src.module_analyser.ModuleAnalyser#analyse_module
         """
-        self.vars_holder.clear()
+        if var_reachables:
+            self.vars_holder.reset(var_reachables)
+        else:
+            self.vars_holder.clear()
+    
+    # ------------------------------------------------
     
     def main(self, ast_line):
         """
@@ -177,7 +191,7 @@ class LineParser:
     def parse_function_def(data):
         # raise Exception
         pass
-
+    
     def parse_import(self, data: dict):
         """
         IN: data: dict. {module: var}. e.g. {"lk_utils.lk_logger.lk": "lk"}

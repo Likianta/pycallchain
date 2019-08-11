@@ -1,7 +1,7 @@
 from lk_utils.lk_logger import lk
 
-from src.module_analyser import ModuleHelper
 from src.line_parser import LineParser
+from src.module_analyser import ModuleHelper
 
 
 class AssignAnalyser:
@@ -11,8 +11,6 @@ class AssignAnalyser:
         self.ast_tree = ast_tree
         self.ast_indents = ast_indents
         
-        self.prj_modules = module_helper.get_prj_modules()  # type: tuple
-        
         self.max_lino = max(ast_indents.keys())
         lk.loga(self.max_lino)
         
@@ -21,18 +19,13 @@ class AssignAnalyser:
             if indent == 0
         ]
         
-        runtime_module = module_helper.get_runtime_module()
-        self.top_assigns = self.update_assigns(runtime_module, self.top_linos)
+        self.top_assigns = self.find_global_vars()  # type: dict
         # -> {'os': 'os', 'downloader': 'testflight.downloader', 'Parser':
         # 'testflight.parser.Parser', 'main': 'testflight.app.main', 'Init':
         # 'testflight.app.Init'}
-        self.top_assigns = self.get_only_prj_modules(self.top_assigns)
-        # -> {'downloader': 'testflight.downloader', 'Parser': 'testflight
-        # .parser.Parser', 'main': 'testflight.app.main', 'Init': 'testflight
-        # .app.Init'}
         lk.loga(self.top_assigns)
-
-    def find_global_vars(self, module_linos: dict):
+    
+    def find_global_vars(self):
         """
         哪些是全局变量:
             runtime 层级的 Import, ImportFrom
@@ -46,87 +39,60 @@ class AssignAnalyser:
             self.ast_indents
         OT: dict. {var: module}
         """
-        runtime_module = self.module_helper.get_runtime_module()
-        runtime_linos = module_linos[runtime_module]
-    
+        top_linos = tuple(
+            lino for lino, indent in self.ast_indents.items()
+            if indent == 0
+        )
+        
         # ------------------------------------------------
         # runtime 层级的 Import, ImportFrom & runtime 层级的 Assign
-    
-        line_parser = LineParser(None)
-    
-        for lino in runtime_linos:
+        
+        line_parser = LineParser()
+        
+        for lino in top_linos:
             ast_line = self.ast_tree[lino]
             line_parser.main(ast_line)
             # line_parser 会自动帮我们处理 ast_line 涉及的 Import, ImportFrom,
             # Assign 等的变量与 module 的对照关系.
-    
+        
         # ------------------------------------------------
         # 行内的 `global xxx`
-    
+        
         for lino in self.ast_indents:
-            if lino in runtime_linos:
+            if lino in top_linos:
                 continue
             pass  # TODO
-    
-        out = line_parser.vars_holder.vars  # type: dict
-        return out
-
-    def update_assigns(self, target_module, linos):
-        assigns = {}
         
-        module_linos = self.module_helper.indexing_module_linos(
-            self.module_helper.get_parent_module(target_module), linos
-        )
-        # 注意: 这里第一个参数传入 get_parent_module(module) 而非 module. 原因详见 src
-        # .analyser.ModuleAnalyser#indexing_module_linos() 注释.
-        
-        for module in module_linos.keys():
-            if module == target_module:
-                """
-                因为 target_module 不能指任自身, 所以应去除.
-                例如 target_module = 'src.app.module', 在源码中, 不能因此自动产生
-                `module: src.app.module` 的对应关系. 所以不能加入到 assigns 中.
-                """
-                continue
-            var = module.rsplit('.', 1)[1]
-            # lk.logt('[TEMPRINT]', var, module)
-            assigns[var] = module
-        
-        # ------------------------------------------------
-        
-        # ABBR: defs: definitions. imps: imports.
-        # ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
-        ast_imps = ("<class '_ast.Import'>", "<class '_ast.ImportFrom'>")
-        
-        for lino in linos:
-            ast_line = self.ast_tree.get(lino)
-            # lk.logt('[TEMPRINT]', lino, ast_line)
-            # -> [(obj_type, obj_val), ...]
-            
-            for element in ast_line:
-                obj_type, obj_val = element
-                # lk.logt('[TEMPRINT]', obj_type, obj_val)
-                if obj_type in ast_imps:
-                    for k, v in obj_val.items():
-                        module = k
-                        var = v
-                        assigns[var] = module
-        return assigns
+        return line_parser.get_vars()
     
     def indexing_assign_reachables(
-            self, target_module, module_linos, only_prj_modules=True
-    ):
-        if target_module == self.module_helper.get_runtime_module():
-            return self.top_assigns_prj_only if only_prj_modules \
-                else self.top_assigns
+            self, target_module, module_linos
+    ) -> dict:
+        if self.module_helper.is_runtime_module(target_module):
+            # 相当于返回 self.find_global_vars() 的结果.
+            return self.top_assigns
         
         # ------------------------------------------------
         
+        """
+        workflow:
+            1. 以 target_module 的 linos[0] 为起点, 向前找到第一个 indent 为 0 的
+            lino
+            2. 以 target_module 的 linos[-1] 为起点, 向后找到第一个 indent 为 0 的
+            lino
+            3. 在此区间内, 将所有 ast_defs 进行解析, 并认定为 var_reachables
+        """
+        
+        # ------------------------------------------------ lino reachables
+        
         target_linos = module_linos[target_module]
+        curr_module_lino = target_linos[0]
         start_offset, end_offset = target_linos[0], target_linos[-1] + 1
+        
+        # the start lino reachable
         indent = self.ast_indents[start_offset]
         if indent == 0:
-            module = target_module
+            pass
         else:
             while True:
                 parent_module = self.module_helper.get_parent_module(
@@ -139,8 +105,8 @@ class AssignAnalyser:
                     break
                 else:
                     continue
-            module = parent_module
         
+        # the end lino reachable
         while end_offset < self.max_lino:
             if end_offset in self.ast_indents:
                 indent = self.ast_indents[end_offset]
@@ -148,37 +114,35 @@ class AssignAnalyser:
                     break
             end_offset += 1
         
+        # get lino reachalbes
         lino_reachables = [
             lino
             for lino in range(start_offset, end_offset)
-            if lino in self.ast_indents
+            if lino in self.ast_indents and lino != curr_module_lino
         ]
+        """
+        这里为什么要判断 `lino != curr_module_lino`?
+        因为 target_module 不能指任自身, 所以应去除.
+        例如 target_module = 'src.app.module', 在源码中, 不能因此自动产生 `module:
+        src.app.module` 的对应关系. 所以不能加入到 assigns 中.
+        """
         
-        # ------------------------------------------------
+        # parse vars
+        line_parser = LineParser()
         
-        if only_prj_modules:
-            assigns = self.top_assigns_prj_only.copy()
-        else:
-            assigns = self.top_assigns.copy()
+        ast_defs = ("<class '_ast.FunctionDef'>", "<class '_ast.ClassDef'>")
         
-        assigns.update(
-            self.update_assigns(
-                module, lino_reachables
-            )
-        )
+        for lino in lino_reachables:
+            ast_line = self.eval_ast_line(lino)
+            if ast_line[0] in ast_defs:
+                line_parser.main(ast_line)
         
-        # FIXME: dirty code
-        var = target_module.rsplit('.', 1)[1]
-        if assigns.get(var) == target_module:
-            assigns.pop(var)
-        
-        if only_prj_modules:
-            return self.get_only_prj_modules(assigns)
-        else:
-            return assigns
+        return line_parser.get_vars()
     
-    def get_only_prj_modules(self, assigns: dict):
-        return {
-            k: v for k, v in assigns.items()
-            if self.module_helper.is_prj_module(k)
-        }
+    def eval_ast_line(self, lino):
+        ast_line = self.ast_tree[lino]  # type: list
+        # ast_line is type of list, assert it not empty.
+        assert ast_line
+        # here we only take its first element. which will show us method or
+        # class definitions.
+        return ast_line[0]

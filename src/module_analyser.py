@@ -3,6 +3,7 @@ from os.path import abspath
 from lk_utils import file_sniffer
 from lk_utils.lk_logger import lk
 
+from src.assign_analyser import AssignAnalyser
 from src.line_parser import LineParser
 
 
@@ -60,7 +61,7 @@ class ModuleHelper:
             for x in all_pyfiles
         )
         # -> ('src.app', 'src.downloader', ...)
-
+        
         lk.loga(len(all_files), len(all_pyfiles))
         # | lk.loga(len(all_pyfiles), prj_modules)
         
@@ -379,44 +380,6 @@ class ModuleIndexing:
         
         return prj_modules
     
-    def find_global_vars(self, module_linos: dict):
-        """
-        哪些是全局变量:
-            runtime 层级的 Import, ImportFrom
-            runtime 层级的 Assign
-            行内的 `global xxx`
-            
-        IN: module_linos
-            self.module_helper
-            self.ast_tree
-            self.ast_indents
-        OT: dict. {var: module}
-        """
-        runtime_module = self.module_helper.get_runtime_module()
-        runtime_linos = module_linos[runtime_module]
-        
-        # ------------------------------------------------
-        # runtime 层级的 Import, ImportFrom & runtime 层级的 Assign
-        
-        line_parser = LineParser(None)
-        
-        for lino in runtime_linos:
-            ast_line = self.ast_tree[lino]
-            line_parser.main(ast_line)
-            # line_parser 会自动帮我们处理 ast_line 涉及的 Import, ImportFrom,
-            # Assign 等的变量与 module 的对照关系.
-        
-        # ------------------------------------------------
-        # 行内的 `global xxx`
-        
-        for lino in self.ast_indents:
-            if lino in runtime_linos:
-                continue
-            pass  # TODO
-        
-        out = line_parser.vars_holder.vars  # type: dict
-        return out
-    
     # ------------------------------------------------
     
     def eval_ast_line(self, lino):
@@ -448,31 +411,36 @@ class ModuleAnalyser:
         module_indexing = ModuleIndexing(
             self.module_helper, self.ast_tree, self.ast_indents
         )
+        assign_analyser = AssignAnalyser(
+            self.module_helper, self.ast_tree, self.ast_indents
+        )
         
         prj_modules = module_indexing.find_prj_modules()
         
         module_linos = module_indexing.indexing_module_linos()
         
-        global_vars = module_indexing.find_global_vars(module_linos)
-        self.line_parser = LineParser(global_vars)
+        self.line_parser = LineParser(assign_analyser.top_assigns)
         
         # ------------------------------------------------
         
         for module, linos in module_linos.items():
-            self.analyse_module(module, linos)
+            var_reachables = assign_analyser.indexing_assign_reachables(
+                module, module_linos
+            )
+            self.analyse_module(module, linos, var_reachables)
         
         # ------------------------------------------------
         
         return self.module_calls, prj_modules
     
-    def analyse_module(self, module, linos):
+    def analyse_module(self, module, linos, var_reachables):
         """
         发现该 module 下的与其他 module 之间的调用关系.
         """
         lk.logd('analyse_module', module, style='■')
         
         related_calls = []
-        self.line_parser.reset()
+        self.line_parser.reset(var_reachables)
         
         for lino in linos:
             ast_line = self.ast_tree[lino]
