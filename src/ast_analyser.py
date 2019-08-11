@@ -1,3 +1,5 @@
+import re
+
 from _ast import *
 from ast import parse as ast_parse, walk as ast_walk
 
@@ -6,6 +8,7 @@ class AstAnalyser:
     root = None
     
     def __init__(self, file):
+        self.file = file
         with open(file, mode='r', encoding='utf-8-sig') as f:
             text = f.read()
         self.root = ast_parse(text)
@@ -14,16 +17,28 @@ class AstAnalyser:
         """
         refer: {lkdemo}/ast_demo.py
         
+        NOTICE: 使用 regex 计算行缩进, 不要用 node.col_offset.
+            为什么: 假设存在以下代码:
+                1 | def func():
+                2 |     if a == 1:
+                3 |         pass
+            对第 2 行 `if a == 1:`, 使用正则计算结果是 indent = 4, 而 node.col_offset
+            的值是 7. 原因在于, node.col_offset 计算的是变量 `a` 的列位置, 而非该行的缩进
+            位置.
+        
         IN: self.file
             self.root
         OT: {lino: indent}
                 lino: int. count from 1 but not consecutive. the linos are
                     already sorted by ascending order.
                 indent: int. the column offset, assert all of them would be
-                    integral multiple of 4, e.g. 0, 4, 8, 12, ... and no
-                    exception.
+                    integral multiple of 4, e.g. 0, 4, 8, 12, ...
         """
+        from lk_utils.read_and_write_basic import read_file_by_line
         lino_indent = {}
+        
+        code_lines = read_file_by_line(self.file)
+        reg = re.compile(r'^ *')
         
         for node in ast_walk(self.root):
             if not (hasattr(node, 'lineno') and hasattr(node, 'col_offset')):
@@ -33,7 +48,11 @@ class AstAnalyser:
             if node.col_offset == -1:
                 # 说明这个节点是 docstring
                 continue
-            lino_indent[node.lineno] = node.col_offset
+            lino_indent[node.lineno] = len(
+                reg.findall(
+                    code_lines[node.lineno - 1]
+                )[0]
+            )
         
         # sort linos
         sorted_lino_indent = {
@@ -59,6 +78,9 @@ class AstAnalyser:
         
         for node in ast_walk(self.root):
             if not hasattr(node, 'lineno'):
+                continue
+            if node.col_offset == -1:
+                # 说明这个节点是 docstring
                 continue
             x = out.setdefault(node.lineno, [])
             x.append((str(type(node)), self.eval_node(node)))

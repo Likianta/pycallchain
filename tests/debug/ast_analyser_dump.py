@@ -14,7 +14,14 @@ def main():
     ofile = 'ast_analyser_dump.json'
     analyser = AstAnalyser(ifile)
     ast_tree = analyser.main()
-    write_json(ast_tree, ofile)
+    ast_indents = analyser.get_lino_indent_dict()
+    
+    out = ast_tree
+    for lino, ast_data in ast_tree.items():
+        indent = ast_indents[lino]
+        out[lino].insert(0, indent)
+    
+    write_json(out, ofile)
 
 
 if __name__ == '__main__':
