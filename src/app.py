@@ -59,6 +59,13 @@ class VirtualRunner:
             for i in new_pyfiles:
                 if i not in call_stream:
                     call_stream.append(i)
+                    
+        # TEST
+        self.writer.show(
+            self.module_helper.get_module_by_filepath(
+                self.pyfile
+            ) + '.module'
+        )
     
     def get_new_pyfiles(self, prj_modules):
         return [self.module_helper.get_pyfile_by_prj_module(x)
@@ -106,7 +113,8 @@ if __name__ == '__main__':
     # TEST
     main(
         prjdir='../',
-        pyfile='../temp/in.py'
+        # pyfile='../temp/in.py'
+        pyfile=__file__
     )
 
     lk.print_important_msg(False)

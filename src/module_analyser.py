@@ -261,7 +261,7 @@ class ModuleIndexing:
         else:
             assert linos is not None
         
-        lk.logd('indexing module linos', master_module, linos)
+        lk.logd('indexing module linos', master_module)
         
         # ------------------------------------------------
         
@@ -385,6 +385,12 @@ class ModuleIndexing:
             runtime 层级的 Import, ImportFrom
             runtime 层级的 Assign
             行内的 `global xxx`
+            
+        IN: module_linos
+            self.module_helper
+            self.ast_tree
+            self.ast_indents
+        OT: dict. {var: module}
         """
         runtime_module = self.module_helper.get_runtime_module()
         runtime_linos = module_linos[runtime_module]

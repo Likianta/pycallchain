@@ -25,7 +25,7 @@ class Writer:
         self.recurse(node, calls)
         
         lk.logt('[D3619]', self.stacks)
-        lk.logt('[I3316]', self.cascade_view)
+        # lk.logt('[I3316]', self.cascade_view)
         
         # TEST output
         from lk_utils.read_and_write_basic import write_json
