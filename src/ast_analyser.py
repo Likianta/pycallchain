@@ -261,8 +261,8 @@ def dump_by_filter_schema(file, schema=1):
 
 
 if __name__ == '__main__':
-    # dump_asthelper_result()
-    dump_lino_indent_result()
+    dump_asthelper_result()
+    # dump_lino_indent_result()
     
     # 在这里传入要解析的 py 文件的路径.
     # dump_by_filter_schema('dump_asthelper_result.py')

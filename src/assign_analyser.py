@@ -74,6 +74,8 @@ class AssignAnalyser:
         if target_module not in module_linos:
             lk.logt('[E2459]', target_module, module_linos)
             raise Exception
+
+        lk.logt('[I0114]', target_module)
         
         # ------------------------------------------------
         

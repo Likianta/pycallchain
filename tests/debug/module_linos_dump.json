@@ -1,0 +1,226 @@
+{
+  "temp.in.module": [
+    1,
+    3,
+    4,
+    6,
+    7
+  ],
+  "temp.in.ModuleHelper": [
+    10,
+    11,
+    12
+  ],
+  "temp.in.ModuleHelper.__init__": [
+    14,
+    15,
+    18
+  ],
+  "temp.in.ModuleHelper.bind_file": [
+    20,
+    21,
+    22
+  ],
+  "temp.in.ModuleHelper.load_prj_modules": [
+    26,
+    44,
+    45,
+    48,
+    49,
+    50,
+    51,
+    52,
+    55,
+    56,
+    57,
+    59,
+    60,
+    61,
+    65,
+    68
+  ],
+  "temp.in.ModuleHelper.get_prj_modules": [
+    72,
+    73
+  ],
+  "temp.in.ModuleHelper.get_prj_module": [
+    75,
+    80,
+    81,
+    82,
+    84,
+    85
+  ],
+  "temp.in.ModuleHelper.get_top_module": [
+    87,
+    88,
+    89,
+    90
+  ],
+  "temp.in.ModuleHelper.get_runtime_module": [
+    92,
+    93,
+    94,
+    95
+  ],
+  "temp.in.ModuleHelper.get_parent_module": [
+    97,
+    98,
+    99,
+    106
+  ],
+  "temp.in.ModuleHelper.get_module_seg": [
+    108,
+    120,
+    121,
+    122,
+    123,
+    125,
+    127,
+    129,
+    131,
+    133
+  ],
+  "temp.in": [
+    109,
+    124,
+    126,
+    128,
+    132,
+    152,
+    328,
+    329
+  ],
+  "temp.in.ModuleHelper.get_module_by_filepath": [
+    135,
+    140
+  ],
+  "temp.in.ModuleHelper.get_pyfile_by_prj_module": [
+    143,
+    144
+  ],
+  "temp.in.ModuleHelper.is_top_module": [
+    148,
+    149
+  ],
+  "temp.in.ModuleHelper.is_runtime_module": [
+    151,
+    153
+  ],
+  "temp.in.ModuleHelper.is_prj_module": [
+    155,
+    161,
+    162,
+    163,
+    164,
+    165,
+    167
+  ],
+  "temp.in.ModuleIndexing": [
+    170
+  ],
+  "temp.in.ModuleIndexing.__init__": [
+    192,
+    199,
+    200,
+    201,
+    203,
+    204,
+    205
+  ],
+  "temp.in.ModuleIndexing.indexing_module_linos": [
+    207,
+    262,
+    263,
+    264,
+    265,
+    268,
+    270,
+    275,
+    276,
+    277,
+    279,
+    280,
+    285,
+    286,
+    289,
+    300,
+    301,
+    310,
+    311,
+    324,
+    326,
+    330,
+    335,
+    338,
+    339,
+    342,
+    346,
+    347,
+    349,
+    350,
+    364
+  ],
+  "temp.in.ModuleIndexing.find_prj_modules": [
+    366,
+    367,
+    370,
+    372,
+    375,
+    378,
+    383,
+    384,
+    385,
+    386,
+    388
+  ],
+  "temp.in.ModuleIndexing.eval_ast_line": [
+    392,
+    393,
+    395,
+    398
+  ],
+  "temp.in.ModuleAnalyser": [
+    401,
+    402
+  ],
+  "temp.in.ModuleAnalyser.__init__": [
+    404,
+    405,
+    406,
+    407,
+    409
+  ],
+  "temp.in.ModuleAnalyser.main": [
+    411,
+    418,
+    419,
+    421,
+    422,
+    425,
+    427,
+    429,
+    433,
+    434,
+    435,
+    437,
+    441
+  ],
+  "temp.in.ModuleAnalyser.analyse_module": [
+    443,
+    447,
+    449,
+    450,
+    452,
+    453,
+    454,
+    455,
+    456,
+    457,
+    459
+  ],
+  "temp.in.ModuleAnalyser.analyse_line": [
+    461,
+    462
+  ]
+}

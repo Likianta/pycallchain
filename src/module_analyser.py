@@ -201,9 +201,10 @@ class ModuleIndexing:
         self.ast_indents = ast_indents
         
         self.top_module = module_helper.get_top_module()
+        self.runtime_module = module_helper.get_runtime_module()
         self.prj_linos = list(ast_indents.keys())
     
-    def indexing_module_linos(self, master_module='', linos=None) -> dict:
+    def indexing_module_linos(self, master_module='', linos=None):
         """
         获取 pyfile 内每个 module 对应的行号范围.
         根据 {lino:indent} 和 ast_tree 创建 {module:linos} 的字典.
@@ -265,7 +266,7 @@ class ModuleIndexing:
             # the linos are already sorted.
         else:
             assert linos is not None
-        
+            
         lk.logd('indexing module linos', master_module)
         
         # ------------------------------------------------
@@ -275,15 +276,13 @@ class ModuleIndexing:
         indent_module_holder = {}  # format: {indent: module}
         module_linos = {}  # format: {module: linos}
         
-        last_parent_module = ''
+        last_module = ''
         last_indent = 0
         # last_indent 初始化值不影响方法的正常执行. 因为我们事先能保证 linos 参数的第一个
         # lino 的 indent 一定是正常的, 而伴随着第一个 lino 的循环结尾, last_indent 就能
         # 得到安全的更新, 因此 last_indent 的初始值无论是几都是安全的.
         
         for lino in linos:
-            # lk.loga(lino)
-            
             obj_type, obj_val = self.eval_ast_line(lino)
             # -> "<class '_ast.FunctionDef'>", 'main'
             
@@ -325,14 +324,17 @@ class ModuleIndexing:
             if obj_type in ast_defs:
                 # obj_type = "<class 'FunctionDef'>", obj_val = 'main'
                 current_module = parent_module + '.' + obj_val
-                # lk.logt('[TEMPRINT]', current_module)
                 # -> 'src.app.main'
-            elif indent > 0 and last_parent_module != master_module:
-                current_module = parent_module
+            elif indent == 0\
+                    or last_module == self.runtime_module:
+                current_module = self.runtime_module
+                # | current_module = parent_module + '.module'
             else:
-                current_module = parent_module + '.module'
-                # -> 'src.app.module'
+                # indent > 0 and last_parent_module not in (master_module, self
+                # .runtime_module
+                current_module = parent_module
             
+            # update module_linos
             node = module_linos.setdefault(current_module, [])
             node.append(lino)  # NOTE: the lino is in ordered
             
@@ -340,12 +342,12 @@ class ModuleIndexing:
             indent_module_holder.update({indent: current_module})
             # -> {0: 'src.app.main'}, {4: 'src.app.main.child_method'}, ...
             
-            # update last var
-            last_parent_module = parent_module
+            # update last vars
+            last_module = current_module
             last_indent = indent
         
-        lk.logt('[D3421]', indent_module_holder)
-        lk.logt('[I4204]', module_linos)
+        lk.logt('[D3421]', self.top_module, indent_module_holder)
+        lk.logt('[I4204]', self.top_module, tuple(module_linos.keys()))
         """
         -> module_linos = {
             'testflight.test_app_launcher.module': [1, 3, 4, 38, 39],
@@ -358,6 +360,7 @@ class ModuleIndexing:
         }
         """
         
+        # raise Exception  # TEST
         return module_linos
     
     def find_prj_modules(self):
@@ -422,7 +425,6 @@ class ModuleAnalyser:
         prj_modules = module_indexing.find_prj_modules()
         
         module_linos = module_indexing.indexing_module_linos()
-        lk.logt('[TEMPRINT]20190811182610', module_linos)
         
         self.line_parser = LineParser(assign_analyser.top_assigns)
         
