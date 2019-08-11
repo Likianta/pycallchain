@@ -39,7 +39,7 @@ class VirtualRunner:
         call_stream = [self.pyfile]
         
         for pyfile in call_stream:
-            lk.logd(pyfile, style='◆')
+            lk.logdx(pyfile, style='◆')
             
             module_calls, prj_modules = self.pyfile_analyser.main(pyfile)
             """
@@ -59,7 +59,10 @@ class VirtualRunner:
             for i in new_pyfiles:
                 if i not in call_stream:
                     call_stream.append(i)
-                    
+        
+        # calc elapsed time
+        lk.total_count = lk.counter
+        
         # TEST
         self.writer.show(
             self.module_helper.get_module_by_filepath(
@@ -110,10 +113,9 @@ if __name__ == '__main__':
     #     pyfile='../testflight/app.py'
     # )
     
-    # TEST
+    # TEST 2
     main(
         prjdir='../',
-        # pyfile='../temp/in.py'
         pyfile=__file__
     )
 

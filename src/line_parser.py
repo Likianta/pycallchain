@@ -31,7 +31,8 @@ class VarsHolder:
 
 class LineParser:
     
-    def __init__(self, global_vars=None):
+    def __init__(self, top_module, global_vars=None):
+        self.top_module = top_module
         self.vars_holder = VarsHolder(global_vars)
         
         self.support_methods = {
@@ -183,15 +184,24 @@ class LineParser:
                 module += '.' + tail
             return module
     
-    @staticmethod
-    def parse_class_def(data):
-        # raise Exception
-        pass
+    def parse_class_def(self, data: str):
+        """
+        IN: data: str. e.g. "Init"
+        OT: "src.app.Init"
+        """
+        var = data  # -> 'Init'
+        module = self.top_module + '.' + var + '.__init__'
+        # -> 'src.app.Init.__init__'
+        self.vars_holder.update(var, module)
     
-    @staticmethod
-    def parse_function_def(data):
-        # raise Exception
-        pass
+    def parse_function_def(self, data: str):
+        """
+        IN: data: str. e.g. "main"
+        OT: "src.app.main"
+        """
+        var = data  # -> 'main'
+        module = self.top_module + '.' + var  # -> 'src.app.main'
+        self.vars_holder.update(var, module)
     
     def parse_import(self, data: dict):
         """

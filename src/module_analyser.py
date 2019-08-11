@@ -291,7 +291,7 @@ class ModuleIndexing:
             indent = self.ast_indents.get(lino, -1)
             parent_indent = indent - 4
             
-            lk.loga(lino, indent, last_module, obj_type, obj_val)
+            # lk.loga(lino, indent, last_module, obj_type, obj_val)
             
             if parent_indent in indent_module_holder:
                 parent_module = indent_module_holder[parent_indent]
@@ -362,8 +362,13 @@ class ModuleIndexing:
             last_module = current_module
             last_indent = indent
         
-        lk.logt('[D3421]', self.top_module, indent_module_holder)
-        lk.logt('[I4204]', self.top_module, tuple(module_linos.keys()))
+        # TEST show
+        # lk.logt('[D3421]', self.top_module, indent_module_holder)
+        show_modules_lightly = tuple(
+            self.module_helper.get_module_seg(x, 'r0')
+            for x in module_linos
+        )
+        lk.logt('[I4204]', self.top_module, show_modules_lightly)
         """
         -> module_linos = {
             'testflight.test_app_launcher.module': [1, 3, 4, 38, 39],
