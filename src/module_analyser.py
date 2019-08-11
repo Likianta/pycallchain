@@ -469,6 +469,9 @@ class ModuleAnalyser:
         发现该 module 下的与其他 module 之间的调用关系.
         """
         lk.logd('analyse_module', module, style='■')
+
+        lk.logt('[TEMPRINT]_20190811_214927',
+                self.line_parser.get_global_vars())
         
         related_calls = []
         

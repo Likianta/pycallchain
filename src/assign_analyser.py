@@ -77,7 +77,7 @@ class AssignAnalyser:
         """
         if self.module_helper.is_runtime_module(target_module):
             # 相当于返回 self.find_global_vars() 的结果.
-            return self.top_assigns, ''
+            return self.top_assigns.copy(), ''
         
         if target_module not in module_linos:
             lk.logt('[E2459]', target_module, module_linos)
